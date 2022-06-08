@@ -57,5 +57,4 @@
 + [[https://youtu.be/bIE95Wc-kmg][.Emacs #6 - Searching and Finding Files]] <-Important
 + [[https://youtu.be/U2Rl23-_ePw][.Emacs #7 - The Command Line]] 
 * 
-| *Navigation:*             | *[[https://github.tamu.edu/DigitalBiology/BIOL647_Digital_Biology_2021_Summer/wiki][Home]]*                                                                       |
 | *Author: [[raramayo@tamu.edu][Rodolfo Aramayo]]* | *License: [[http://creativecommons.org/licenses/by-nc-sa/4.0/][All content produced in this site is licensed by: CC BY-NC-SA 4.0]]* |
