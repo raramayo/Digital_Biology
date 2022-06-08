@@ -155,4 +155,5 @@
   3. Place cursor where you want the rectangle to be opened to end
   4. Open-rectangle: =C-x r o=
 * 
-| *Author: [[raramayo@tamu.edu][Rodolfo Aramayo]]* | *License: [[http://creativecommons.org/licenses/by-nc-sa/4.0/][All content produced in this site is licensed by: CC BY-NC-SA 4.0]]* |
+| *Author: Rodolfo Aramayo* | *License: [[http://creativecommons.org/licenses/by-nc-sa/4.0/][All content produced in this site is licensed by: CC BY-NC-SA 4.0]]* |
+
