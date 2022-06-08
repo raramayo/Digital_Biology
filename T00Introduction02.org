@@ -56,7 +56,7 @@
       + The machine can crash  
       + These are things that are beyond my control
   + Conclusion: This class follows a new paradigm
-+ [[https://github.tamu.edu/DigitalBiology/BIOL647_Digital_Biology_2021_Summer/blob/master/00Data/000_BIOL647.pdf][Syllabus and Class Organization]]
++ Syllabus and Class Organization
 + *Brief Discussion about Bootstrapping*
   + Definition: Computing a technique of loading a program into a
     computer by means of a few initial instructions which enable the
