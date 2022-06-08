@@ -1,0 +1,61 @@
+# #+TITLE: Digital Biology
+#+AUTHOR: Rodolfo Aramayo
+#+EMAIL: raramayo@tamu.edu
+#+STARTUP: align
+* *[[https://www.gnu.org/software/emacs/][Emacs]]*
+** *[[https://www.gnu.org/software/emacs/tour/index.html][Emacs Tour]]*
+** *Basic_Emacs*
++ SSH into DigitalBiology
+  : ssh YourDigitalBiologyUsername@129.114.17.139
++ Open Emacs
+  : emacs 
++ Notation: We use a notation like *ctrl + x or C-x* to denote depressing the Ctrl (Control) key,
+  then pressing the x key while Ctrl is depressed, then releasing both keys.
++ We employ the notation used in the Emacs documentation, which
+  abbreviates *ctrl + x* as *C-x*
++ *C-x-f (load file into buffer)*
+  + The command *C-x-f* (press the Ctrl key, press and release x,
+    press and release f, release Ctrl) loads a file on disk into an
+    Emacs buffer (an Emacs working area) for editing.  You are
+    prompted for the name of the file to load.  You may then make
+    changes to the buffer by typing and by using other Emacs commands.
+    The buffer is not saved to a file on disk until you specifically
+    request it with, for example, the *C-x-s* command
++ *C-x-s (save buffer to file)*
+  + The command *C-x-s* saves the current Emacs buffer to disk as
+    the currently named file.  The name of the file is located on a
+    bar at the bottom of the window
++ *C-k (kill line)* *Kill=Copy*
+  + The command *C-k* kills (deletes) the current line in the current
+    buffer from the cursor to the end of the line
++ *C-y (yank back line)* *Yank=Paste*
+  + This command "yanks back" the most recently killed line or set of
+    lines and pastes it into the current cursor position
++ *C-x-c (exit Emacs)*
+  + This command exits Emacs.  If buffers remain that are unsaved,
+    Emacs asks you whether you want to save them
++ *Please do this later, not now:* *C-h ? (general help)*
+  + This command offers a number of help options
++ *Please do this later, not now:* *C-h t (start the Emacs tutorial)*
+  + The command *C-h t* (press the Ctrl key, press and release h,
+    release Ctrl, press and release t) starts the Emacs tutorial.
+    This takes you step-by-step through some basic Emacs commands
++ [[https://www.gnu.org/software/emacs/refcards/pdf/refcard.pdf][Emacs_Reference_Card]]
++ [[https://www.gnu.org/software/emacs/refcards/pdf/survival.pdf][Emacs_Survival_Guide]]
++ [[https://www.gnu.org/software/emacs/manual/html_node/emacs/index.html][Emacs_Manual_HTML]]
++ [[https://www.gnu.org/software/emacs/manual/pdf/emacs.pdf][Emacs_Manual_PDF]]
++ [[https://www.fsf.org/][Free_Software_Foundation]]
++ [[https://flossmanuals.net/][Floss_Manuals]]
++ [[https://www.libreoffice.org/][Libre_Office]]
+** *[[http://tuhdo.github.io/index.html][Fantastic Tutorial]]*
+** *Great Emacs Tutorials* *Watch Them Later*
++ [[https://youtu.be/MRYzPWnk2mE][.Emacs #1 - Getting Started and Playing Games]]
++ [[https://youtu.be/mMcc0IF1hV0][.Emacs #2 - Customizations and Themes]]
++ [[https://youtu.be/Cf6tRBPbWKs][.Emacs #3 - Installing Packages and Extensions]] <-Important
++ [[https://youtu.be/7jZdul2fC94][.Emacs #4 - Exploring the Filesystem with Dired]] <-Important
++ [[https://youtu.be/JsggDFtAA78][.Emacs #5 - Managing and Finding Buffers]] <-Important
++ [[https://youtu.be/bIE95Wc-kmg][.Emacs #6 - Searching and Finding Files]] <-Important
++ [[https://youtu.be/U2Rl23-_ePw][.Emacs #7 - The Command Line]] 
+* 
+| *Navigation:*             | *[[https://github.tamu.edu/DigitalBiology/BIOL647_Digital_Biology_2021_Summer/wiki][Home]]*                                                                       |
+| *Author: [[raramayo@tamu.edu][Rodolfo Aramayo]]* | *License: [[http://creativecommons.org/licenses/by-nc-sa/4.0/][All content produced in this site is licensed by: CC BY-NC-SA 4.0]]* |

@@ -1,0 +1,113 @@
+# #+TITLE: Digital Biology
+#+AUTHOR: Rodolfo Aramayo
+#+EMAIL: raramayo@tamu.edu
+#+STARTUP: align
+* *Version Control: GIT*
+** *GIT101*
+   + [[https://www.git-scm.com/][GIT]]
+   + [[https://www.git-scm.com/videos][What is Version Control and GIT?]]
+   + [[https://www.git-scm.com/book/en/v2][GIT Book]]
+** *Adding keys to github.tamu.edu*
+  + [[https://github.tamu.edu/settings/profile][Go to Settings]]
+  + [[https://github.tamu.edu/settings/keys][Select Keys]]
+  + [[https://github.tamu.edu/settings/ssh/new][Add New Key]]
+  + Copy the ~public~ version of your key, paste the contents and save
+  + This should allow you to ~push~ to you repository later
+** *Assigning Repositories*
+   |---------------+-----------------+-------------------------+--------------|
+   | *Name*        | *Complete Name* | *Email*                 | *DBUsername* |
+   |---------------+-----------------+-------------------------+--------------|
+   | Erin          | Arthur          | earthur@tamu.edu        | DB2022_01    |
+   | Max           | Chin            | maxchin@tamu.edu        | DB2022_02    |
+   | Tamika Shonna | Harford         | tamika.harford@tamu.edu | DB2022_03    |
+   | Stephen Dean  | King            | sdking319@tamu.edu      | DB2022_04    |
+   | Xinyu         | Nie             | xynie1996@tamu.edu      | DB2022_05    |
+   | Alexander     | LeGresley       | alexlegresley@tamu.edu  | DB2022_06    |
+   | Luke          | Gallucci        | lukegallucci@tamu.edu   | DB2022_07    |
+   |---------------+-----------------+-------------------------+--------------|
+
+** *Basic Tutorial*
+*** [[https://git-scm.com/book/en/v2/Getting-Started-First-Time-Git-Setup][First-Time Git Setup]]
++ Git comes with a tool called git config that lets you get and
+  set configuration variables that control all aspects of how Git
+  looks and operates. These variables can be stored in three
+  different places:
++ =/etc/gitconfig= file: Contains values applied to every user on
+  the system and all their repositories. If you pass the option
+  --system to git config, it reads and writes from this file
+  specifically. (Because this is a system configuration file, you
+  would need administrative or superuser privilege to make changes
+  to it.)
++ =~/.gitconfig= or =~/.config/git/config= file: Values specific
+  personally to you, the user. You can make Git read and write to
+  this file specifically by passing the --global option, and this
+  affects all of the repositories you work with on your system.
++ =config= file in the Git directory (that is, .git/config) of
+  whatever repository you’re currently using: Specific to that
+  single repository. You can force Git to read from and write to
+  this file with the --local option, but that is in fact the
+  default. (Unsurprisingly, you need to be located somewhere in a
+  Git repository for this option to work properly.)
++ Each level overrides values in the previous level, so values in .git/config trump those in /etc/gitconfig.
++ You can view all of your settings and where they are coming from using:
+  : git config --list --show-origin
++ Add *Your Identity*
+  : git config --global user.name "YourName YourLastName"
+  : git config --global user.email YourTAMUEmail
++ Add *Your Editor*
+  : git config --global core.editor emacs
++ Checking Your Settings
+  : git config --list    # or
+  : git config user.name # Checking configuration parameters
++ Cloning a repository
+  : git clone git@github.tamu.edu:DigitalBiologyStudents/DB2022_xx.git
+  : 
+  : git status               # Checks Repo status
+  : mv README.md README.org  # Re-name file and converts it to org-mode format
+  : gity status              # Checks Repo status
+  : git add -vA .            # Add files to the Repo
+  : git commit -m "message"  # Commit = record these files to database
+  : git status               # Checks Repo status
+  : git push origin master
++ Now we will open the file and make a modification (follow my instructions)
+  : git status
+  : git add -vA .
+  : git status
+  : git commit -m "message" 
+  : git status
+  : git log
+  : git push origin master
++ Example of collaborating with Git:
+  + In Computer02
+    + Clone the repo
+    + Modify the README.org file
+    + Commits changes
+    + Then compare what happens to your repo in Computer01 and Computer02
+    + For example, observe and compare the logs of your repos if you
+     issue the following commands in both computers:
+    : git log
+    + Now, both commit and push your changes to your repo in Computer02
+    : git commit -m "message"
+    : git push origin master
+  + In Computer01: 
+     : git pull origin master
+  + Now compare the logs in both computers:
+	: git log
+    + Both logs should be identical
++ Other Configuration Commands
+  : git config --global alias.last 'log -1 HEAD' # Defining aliases in git
+  : git last 
+  : git log --graph --decorate --abbrev-commit --all --pretty=oneline 
+  : git config --global alias.log 'log --graph --decorate --abbrev-commit --all --pretty=oneline'
+  : git log
++ [[https://www.atlassian.com/git/tutorials][Great Tutorial]]
+  # : git push 
+  # : git pull
+  #   + Merging files
+  # : git branch
+  # : git checkout -b BranchName
+  # : git push -u origin BranchName
+  # : git checkout master
+* 
+| *Navigation:*             | *[[https://github.tamu.edu/DigitalBiology/BIOL647_Digital_Biology_2021_Summer/wiki][Home]]*                                                                       |
+| *Author: [[raramayo@tamu.edu][Rodolfo Aramayo]]* | *License: [[http://creativecommons.org/licenses/by-nc-sa/4.0/][All content produced in this site is licensed by: CC BY-NC-SA 4.0]]* |

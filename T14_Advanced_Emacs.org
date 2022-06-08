@@ -1,0 +1,159 @@
+# #+TITLE: Digital Biology
+#+AUTHOR: Rodolfo Aramayo
+#+EMAIL: raramayo@tamu.edu
+#+STARTUP: align
+* *Advanced_Emacs*
+** *Dired Commands: M-x dired*
+   |---------+----------------------------------------------|
+   | *Key*   | *Action*                                     |
+   |---------+----------------------------------------------|
+   | D       | Deletion                                     |
+   | x       | Execution                                    |
+   | +       | Creates new directory                        |
+   | C-x C-f | Creates new file                             |
+   | g       | Refresh buffer                               |
+   | \!      | Run shell command on file                    |
+   | shift-c | Copy files                                   |
+   | m       | Mark files                                   |
+   | u       | Unselects file                               |
+   | Shift-u | Unmarks all files                            |
+   | t       | Toggles marks or selects All files           |
+   | */      | Marks all directories                        |
+   | */-t    | Marks all files only                         |
+   | shift-A | Searches for some text inside files (regexp) |
+   | M-,     | Moves to next match                          |
+   | R       | Renames file                                 |
+   | s       | Changes the sorting order of the directory   |
+   | Shift-u | Removes indicators                           |
+   | C-x C-q | Makes Dired buffer editable                  |
+   | C-c C-c | Refreshes the editable buffer                |
+   | ~       | Marks backup files for deletion              |
+   | C-h i   | Open Info in emacs => Go emacs => Dired      |
+   |---------+----------------------------------------------|
+** *Shell Commands:*
++ It is super important to understand that you can invoke =shell=
+  commands from inside Emacs. For example, if you want to run the
+  =date= command, you would type:
+ #+BEGIN_SRC bash
+ #Executes a command and displays the output in a new buffer
+ M-x shell-command or M-! 
+ M-! date
+ #+END_SRC
+  + Note how the result is printed into the Emacs minibuffer
+  + To execute a command on the same buffer you are in, type:
+ #+BEGIN_SRC bash
+ C-u M-!
+ # Example
+ C-u M-! date
+ C-u M-! seq 1 10
+ C-u M-! seq 1 10 | sort -nr 
+ C-u M-! seq 1 100 | sort -nr | head 
+ #+END_SRC 
+  + If you, however want to execute a =shell= command using a region of
+    the buffer you are working on as input, you can issue the command:
+  #+BEGIN_SRC bash
+  #Executes a command, piping in the current region as input; displays the output in a new buffer
+  M-x shell-command-on-region or M-|  
+  #+END_SRC
+  + Here if we were to select the set of numbers:
+  #+BEGIN_SRC bash
+  01
+  02
+  03
+  04
+  05
+  #+END_SRC
+  + And execute the command: =M-| sort -nr=, we would obtain (in this case in the minibuffer):
+  #+BEGIN_SRC bash
+  05
+  04
+  03
+  02
+  01
+  #+END_SRC
+------------
++ Explain the use of search and replace: =M-%=
++ Emacs Macros
+------------
+** *Rectangle Commands:*
++ *Inserting a rectangle*
+  + *Rectangle example:*
+    #+BEGIN_SRC bash
+    pe1_01='/scratch/group/biol647/DB19S01B_00/DB190410.Homework/SRR097405_1.fastq.fastq.gz'
+    pe1_02='/scratch/group/biol647/DB19S01B_00/DB190410.Homework/SRR097405_2.fastq.fastq.gz'
+    pe1_03='/scratch/group/biol647/DB19S01B_00/DB190410.Homework/SRR097405.fastq.fastq.gz'
+    pe1_04='/scratch/group/biol647/DB19S01B_00/DB190410.Homework/SRR1564847.fastq.fastq.gz'
+    pe1_05='/scratch/group/biol647/DB19S01B_00/DB190410.Homework/SRR350087.fastq.fastq.gz'
+    pe1_06='/scratch/group/biol647/DB19S01B_00/DB190410.Homework/SRR350448_1.fastq.fastq.gz'
+    pe1_07='/scratch/group/biol647/DB19S01B_00/DB190410.Homework/SRR350448_2.fastq.fastq.gz'
+    pe1_08='/scratch/group/biol647/DB19S01B_00/DB190410.Homework/SRR350448_3.fastq.fastq.gz'
+    pe1_09='/scratch/group/biol647/DB19S01B_00/DB190410.Homework/SRR350448.fastq.fastq.gz'
+    pe1_10='/scratch/group/biol647/DB19S01B_00/DB190410.Homework/SRR536826.fastq.fastq.gz'
+    #+END_SRC
++ *Deleting Trailing Whitespaces*
+   #+BEGIN_SRC bash
+   =M-x delete-trailing-whitespace
+   #+END_SRC
++ *Selecting a rectangle:*
+  1. Place cursor where you want the rectangle to start
+  2. Define the start of the rectangle: =C-space=
+  3. Place cursor where you want the rectangle to end
+  4. Copy the rectangle: =C-x r s 1=
+  5. Clear selection: =C-space-space=
++ *Delete a rectangle:* =M-x Delete-rectangle= or =C-x r d=
+  1. Place cursor where you want the rectangle to be deleted to start
+  2. Define the start of the rectangle: =C-space=
+  3. Place cursor where you want the rectangle to be deleted to end
+  4. Delete-rectangle: =C-x r d=
+  5. *IMPORTANT: This command DOES NOT load the deletion into memory*
++ *Inserting rectangle wherever you want*
+  1. Place cursor where you want therectangle to be
+  2. Copy the rectangle: =C-x r i 1= (here you can select =any= buffer
+     number. Unlike other applications, Emacs allows you to store
+     information in as many buffers as you have memory available
++ *Killing (cut) a rectangle:* =M-x kill-rectangle= or =C-x r k=
+  1. Place cursor where you want the rectangle to be killed to start
+  2. Define the start of the rectangle: =C-space=
+  3. Place cursor where you want the rectangle to be killed to end
+  4. Kill rectangle: =C-x r k=
+  5. *IMPORTANT: This command loads the kill into memory*
++ *Yanking (pasting) a rectangle:* =M-x paste-rectangle= or =C-x r y=
+  1. This command will replace whatever you have previously loaded in
+     memory. You therefor need to call =kill-rectangle= first
+  2. Place cursor where you want the rectangle to be yanked to start
+  3. Yank rectangle: =C-x r y=
++ *Deleting a white space rectangle:* =M-x delete-whitespace-rectangle=
+  1. Place cursor where you want the white space rectangle to be deleted to start
+  2. Define the start of the rectangle: =C-space=
+  3. Place cursor where you want the white space rectangle to be deleted to end
+  4. Delete-rectangle: =M-x delete-whitespace-rectangle=
++ *Inserting a string into a rectangle:* =M-x string-insert-rectangle=
+  1. Place cursor where you want the rectangle to be processed to start
+  2. Define the start of the rectangle: =C-space=
+  3. Define the lines you want to be affected
+  4. =M-x string-insert-rectangle=
+  5. Define replacement string
++ *Replacing a rectangle:* =M-x replace-rectangle= or =C-x r t=
+  1. Place cursor where you want the rectangle to be replaced to start
+  2. Define the start of the rectangle: =C-space=
+  3. Place cursor where you want the rectangle to be replaced to end
+  4. Replace rectangle: =C-x r t= or =M-x replace-rectangle=
+  5. Insert replacing text
++ *Inserting a column of numbers into a rectangle:* =M-x rectangle-number-lines or C-r N=
+  1. Define the lines you want numbered by placing cursor at the first line
+  2. Define the start: =C-space=
+  3. Place cursor at the line you want the numbering to stop
+  4. Number lines: =M-x rectangle-number-lines=
++ *Clearing a rectangle:* =M-x clear-rectangle= or =C-x r c=
+  1. Place cursor where you want the rectangle to be cleared to start
+  2. Define the start of the rectangle: =C-space=
+  3. Place cursor where you want the rectangle to be cleared to end
+  4. Clear the rectangle: =C-x r c=
++ *Opening a rectangle:* =C-x r o= or =M-x open-rectangle=
+  1. Place cursor where you want the rectangle to be opened to start
+  2. Define the start of the rectangle: =C-space=
+  3. Place cursor where you want the rectangle to be opened to end
+  4. Open-rectangle: =C-x r o=
+* 
+| *Navigation:*             | *[[https://github.tamu.edu/DigitalBiology/BIOL647_Digital_Biology_2021_Summer/wiki][Home]]*                                                                       |
+| *Author: [[raramayo@tamu.edu][Rodolfo Aramayo]]* | *License: [[http://creativecommons.org/licenses/by-nc-sa/4.0/][All content produced in this site is licensed by: CC BY-NC-SA 4.0]]* |

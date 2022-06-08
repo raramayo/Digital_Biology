@@ -1,0 +1,105 @@
+# #+TITLE: Digital_Biology -- BIOL647
+#+AUTHOR: Rodolfo Aramayo
+#+EMAIL: raramayo@tamu.edu
+#+STARTUP: align
+* *BIOL647: DIGITAL BIOLOGY*
++ SSHing Into 129.114.17.139 or *139*
+   + ssh YourDigitalBiologyUsername@129.114.17.139
++ SSHing Into 129.114.16.133 or *133*
+   + ssh YourDigitalBiologyUsername@129.114.16.133
+     
++ *After SSHing into GRACE:*
+  + *In Grace, the default Emacs version is GNU Emacs 24.3.1 (Old)*
+    : module load GCCcore/10.2.0 Emacs/27.2
+  + *In Grace, the default Git version is 1.8.3.1 (Old)*
+    : module load GCCcore/10.2.0 git/2.28.0-nodocs
+  + *Combined:*
+    : module load GCCcore/10.2.0 Emacs/27.2 git/2.28.0-nodocs 
+
+#    + To call GCAT:
+#    : gcatemplates
++ =(Note that this page will change during the semester)=
+|-------------------+--------------+----------------------------------------------+-----------|
+| *DATE*            | *LECTURE*    | *TOPIC(S)*                                   | *VIDEOS*  |
+|-------------------+--------------+----------------------------------------------+-----------|
+| *MON: 2022-03-21* | *Lecture 01* | *[[https://github.tamu.edu/DigitalBiology/Digital_Biology_2022/blob/master/T00Introduction01.org][Introduction 101]]*                           |           |
+|                   |              | *[[https://github.tamu.edu/DigitalBiology/Digital_Biology_2022/blob/master/T00Introduction02.org][Introduction 102]]*                           |           |
+|-------------------+--------------+----------------------------------------------+-----------|
+| *WED: 2022-03-23* | *Lecture 02* | *[[https://github.tamu.edu/DigitalBiology/Digital_Biology_2022/blob/master/T01_SSH101.org][Introduction to SSH]]*                        | *[[https://tamu.zoom.us/rec/play/PCKIftO9TFrL1jBSMXlb3zVzFqJCzcQKuc7CjaYQflK6AFSqA12h6MZb0bekqv7iiirBRm6pxn3hqY2p.J4UiGRe0W5IPBAGf][Video]]*   |
+|-------------------+--------------+----------------------------------------------+-----------|
+| *FRI: 2022-03-25* | *Lecture 03* | *[[https://github.tamu.edu/DigitalBiology/Digital_Biology_2022/blob/master/T02_Emacs.org][Introduction to Emacs]]*                      | *[[https://tamu.zoom.us/rec/play/YcQTWYXdpyuTmbOWU9CguwsVKiXxNmfeed8bISNdVxBTyqiKnNq8Z362Rh3H_9nfmQhDJABHPgPmZpLv.C4bimEMu3Z1as89f][Video01]]* |
+|                   |              | *[[https://github.tamu.edu/DigitalBiology/Digital_Biology_2022/blob/master/T03_GIT101.org][Introduction to GIT and GITHUB]]*             | *[[https://tamu.zoom.us/rec/play/EdACdbBIRvmc0xXblFw_iXj7qs-u5BYX1J7lKAARI9w2wGMBcsKbbNwL3xdlcV0kYRcz5O_KFCftrUwc.6nNe4srLAJ6vlwtW][Video02]]* |
+|-------------------+--------------+----------------------------------------------+-----------|
+| *MON: 2022-03-28* | *Lecture 04* | *[[https://github.tamu.edu/DigitalBiology/Digital_Biology_2022/blob/master/T04_Unix101.pdf][Unix101]]*                                    | *[[https://tamu.zoom.us/rec/play/atVeNuZw138D_qSFH0cabvOc4_L-QQwo9HoEykUG_0V03Gucst3vNZI0ss7_GEjFJlyGW5CfvuipTzSw.39bCLj8pTA2y4lSC][Video]]*   |
+|-------------------+--------------+----------------------------------------------+-----------|
+| *WED: 2022-03-30* | *Lecture 05* | *[[https://github.tamu.edu/DigitalBiology/Digital_Biology_2022/blob/master/T05_Unix102.pdf][Unix102]]*                                    | *[[https://tamu.zoom.us/rec/play/42in5sQjLphGReCYTxdZMHa071jateBCawqFjsewt4_5epOijPTXHEwR7KJo-E36OoYnq47k--6bw-mx.ihSdArVIwnxUTGQ2][Video]]*   |
+|-------------------+--------------+----------------------------------------------+-----------|
+| *FRI: 2022-04-01* | *Lecture 06* | *[[https://github.tamu.edu/DigitalBiology/Digital_Biology_2022/blob/master/T06_Unix103.pdf][Unix103]]*                                    | *[[https://tamu.zoom.us/rec/play/OV2dkfqz9vFbSrVqlv4Abjngb8ttY8vJ2WRJnO89eR2PdlGrLJZor_CGyerZpxZCvLwbHS0uLXbi9WYY.hpfSVl_yrW4n6efY][Video]]*   |
+|-------------------+--------------+----------------------------------------------+-----------|
+| *MON: 2022-04-04* | *Lecture 07* | *[[https://github.tamu.edu/DigitalBiology/Digital_Biology_2022/blob/master/T07_Unix104.pdf][Unix104]]*                                    | *[[https://tamu.zoom.us/rec/play/rIurhFmSG27p_BncSc3ySddsDRnYVmBiLXE-JXn8EuJ3jjSIIAZfOYvxKKrYEWcvUgIjC-6muz2cpdju.C5gCCPpUj73x9LhR][Video]]*   |
+|-------------------+--------------+----------------------------------------------+-----------|
+| *WED: 2022-04-06* | *Lecture 08* | *[[https://github.tamu.edu/DigitalBiology/Digital_Biology_2022/blob/master/T08_Unix105.pdf][Unix105]]*                                    | *[[https://tamu.zoom.us/rec/play/GCCAGXDWk6JkA-sFTOmR1mhPsM-I9oWkPRYk3vxTEprULJVE05TV096PGjmaO35IxiuZ99k6fWjgFK1q.rLJVTz_EU9S4iXx6][Video]]*   |
+|-------------------+--------------+----------------------------------------------+-----------|
+| *FRI: 2022-04-08* | *Lecture 09* | *[[https://github.tamu.edu/DigitalBiology/Digital_Biology_2022/blob/master/T09_Genomics101.pdf][Genes, Genome Files, and Genome Browsers]]*   | *[[https://tamu.zoom.us/rec/play/y1z29NQvaC15wDapYsLRcJOX1QZWAqWxwvnLx3rnSV8HJYCkdz4kCH-1Ww9i5z2qXE5Gns8XlSSGVXZb.PjhkpEbN0DHExIt-][Video]]*   |
+|                   |              | *[[https://github.tamu.edu/DigitalBiology/Digital_Biology_2022/blob/master/T10_Genomics102.org][BED Tools]]*                                  |           |
+|-------------------+--------------+----------------------------------------------+-----------|
+| *MON: 2022-04-11* | *Lecture 10* | *[[https://github.tamu.edu/DigitalBiology/Digital_Biology_2022/blob/master/T11_Genomics103.pdf][FASTQ Format]]*                               | *[[https://tamu.zoom.us/rec/play/2WtDJqXIJSTsW1VEhTbDc8hWjEp20MS8_9Af2vTb0i_xag_sxUnPxjcC0nS0CyiFb7Du7qPS8jo3jjQL.PKLqZ5MMDjMJb_I4][Video01]]* |
+|                   |              | *[[https://github.tamu.edu/DigitalBiology/Digital_Biology_2022/blob/master/T12_Genomics104.pdf][NCBI Databases and Quality Control]]*         | *[[https://tamu.zoom.us/rec/play/EmgQAg-cdiIVyotPFpOM8-l6kXqUfmmfS-6HAkD9QrPuv2Q7vtElA-Shn643uR2cSJmDQNTuBB7I8DBY.SWr8SXGqZOYgv-Jv][Video02]]* |
+|-------------------+--------------+----------------------------------------------+-----------|
+| *WED: 2022-04-13* | *Lecture 11* | *[[https://github.tamu.edu/DigitalBiology/Digital_Biology_2022/blob/master/T13_Genomics105.pdf][Mapping and Alignment 101]]*                  | *[[https://tamu.zoom.us/rec/play/n0nMXfaC8f8rg3Nj6FHcs9Dyf5Juyq-FNxVsX6Kw4Yws4wzU5EpLmc9egGVmg4wTm9AWjcHXYWxPUxfJ.f3mhrNjam4U7ssK-][Video]]*   |
+|-------------------+--------------+----------------------------------------------+-----------|
+| *FRI: 2022-04-15* | *No Classes* | *Reading Day*                                |           |
+|-------------------+--------------+----------------------------------------------+-----------|
+| *MON: 2022-04-18* | *Lecture 12* | *[[https://github.tamu.edu/DigitalBiology/Digital_Biology_2022/blob/master/T14_Advanced_Emacs.org][Advanced Emacs]]*                             | *[[https://tamu.zoom.us/rec/play/BfRLWObrbgd-qQRalJh2TavsD_o8zmPrQpzPCNoxuv0wDLuqGhMcPtJVuY5Rxct7Xy_aUlkaYRTySPxc.Y15KBhgIzwqvRR5_][Video01]]* |
+|                   |              | *[[https://github.tamu.edu/DigitalBiology/Digital_Biology_2022/blob/master/T15_Org_Mode.org][Introduction to Org-Mode]]*                   |           |
+|                   |              | *[[https://github.tamu.edu/DigitalBiology/Digital_Biology_2022/blob/master/T16_Genomics106.pdf][Mapping and Alignment 102 - BWA]]*            | *[[https://tamu.zoom.us/rec/play/NUMAEu9aEaPhVFu_rflCWR3m1rjJoES-ov-uQj2kMnRuMylq6rdcY17MPjurzwVfM0Ekkhu5aR2HEY-o.eAQHX3UmPS1snXiR][Video02]]* |
+|                   |              | *Scripting BWA Mapping*                      | *[[https://tamu.zoom.us/rec/play/9dnSsSYdbWbJZEeFywe4gdWjh2cT9IodTVZNa6gtLqTm-BFTwcmt2nJtHCwnpxKcUj4OTNteFM2X1soF.kfcOzu_fKTRM-bxP][Video03]]* |
+|-------------------+--------------+----------------------------------------------+-----------|
+| *WED: 2022-04-20* | *Lecture 13* | *[[https://github.tamu.edu/DigitalBiology/Digital_Biology_2022/blob/master/T17_Genomics107.pdf][Mapping and Alignment 103 - BOWTIE/BOWTIE2]]* | *[[https://tamu.zoom.us/rec/play/DbBHznz-vWKHxurP2hzJj4__B6a3FYO80S4aW_uVZvFy4x2Av9bT2huxL6nIGhVPBc2DLnCASscpm9hd.rjkUc_e7jtGA39GA][Video01]]* |
+|                   |              | *Homework Instructions*                      | *[[https://tamu.zoom.us/rec/play/5ZpdN6OueHcJGSVmifsK3CVk5TtxyCtH2k-Ggz0cIKXhFzmAiCbualaivMSs7L42NUUcNRWYVEI2dAFI.CXMAs0qzuOszWJke][Video02]]* |
+|-------------------+--------------+----------------------------------------------+-----------|
+| *FRI: 2022-04-22* | *Lecture 14* | *[[https://github.tamu.edu/DigitalBiology/Digital_Biology_2022/blob/master/T18_Genomics108.pdf][Introduction to Experimental Design]]*        | *[[https://tamu.zoom.us/rec/play/L1C572FEq358UukTTL3R08n4pFTcsuQTdizl_lcq62CDAO9Kak7iK8K0sIgwX4wqaxg3naJ655bmpDaf.jjm9FR7nNZtTfO01][Video01]]* |
+|                   |              | *[[https://github.tamu.edu/DigitalBiology/Digital_Biology_2022/blob/master/T19_Genomics109.pdf][Transcriptome Mapping and Analysis]]*         | *[[https://tamu.zoom.us/rec/play/UUoN-s6x80YxsVKblW2Dg4nYaQ4s6yNtJm8ILJpGY4K7_P2xIQO9yCAX2GJCGj5CroUue0FqtRw1Uaeq.-r9vZCgz2mRwsYw_][Video02]]* |
+|                   |              | *[[https://github.tamu.edu/DigitalBiology/Digital_Biology_2022/blob/master/T20_Intro_to_Grace_Spring_2022.pdf][Introduction to Grace]]*                      | *[[https://tamu.zoom.us/rec/play/vLu18Loqg-5c_ZnCDtAbBai7Vimqr5WwDdJunDcBY0z5uq4YRP0MxgD13mIhsA0IHsb2QXo1RrWLhK0.1Ra9kZlfITzFRAqA][Video03]]* |
+|-------------------+--------------+----------------------------------------------+-----------|
+| *MON: 2022-04-25* | *Lecture 15* | *[[https://github.tamu.edu/DigitalBiology/Digital_Biology_2022/blob/master/T21_Genomics109.pdf][Genomics109]]*                                | *[[https://tamu.zoom.us/rec/play/Wa49u-9APPhmjZa5UZlQEQHjyZXNXEGklH5r7UyFeCQmGmZvvyUpIYODwYp1Kud0AV7NkM-ArXe5XuZk.vk0520AT7-_IKeAi][Video]]*   |
+|                   |              | *[[https://github.tamu.edu/DigitalBiology/Digital_Biology_2022/blob/master/T22_Hisat2StringTieCuffDiff_Grace.org][Running HISAT2-StringTie-CuffDiff Pipeline]]* | *[[https://tamu.zoom.us/rec/play/zls54n2RIh5GrK_ha8irvTIDea7lfpi2JkpyCWvb-vb0sfzzBZTUfjWgTht7Mi_wJiKM01ko6ZSWgedA.ZtD44S1a0N53QY8R][Video]]*   |
+|-------------------+--------------+----------------------------------------------+-----------|
+| *WED: 2022-04-27* | *Lecture 16* | *[[https://github.tamu.edu/DigitalBiology/Digital_Biology_2022/blob/master/T22_Hisat2StringTieCuffDiff_Grace.org][Running HISAT2-StringTie-CuffDiff Pipeline]]* | *[[https://tamu.zoom.us/rec/play/P2b04ySujUX48VOq8Bn6tDc9BiAYN8J2r3CgTJhSk95fc_Mv_ZfpuwB9-38hBIZJjbv-hH-wdbzuOPnG.NLBIAYP5g4x9GLRQ][Video]]*   |
+|-------------------+--------------+----------------------------------------------+-----------|
+| *FRI: 2022-04-29* | *Lecture 17* | *[[https://github.tamu.edu/DigitalBiology/Digital_Biology_2022/blob/master/T22_Hisat2StringTieCuffDiff_Grace.org][Running HISAT2-StringTie-CuffDiff Pipeline]]* | *[[https://tamu.zoom.us/rec/play/T8C-0sHR3H8NPncwidFYlhfW7JLa0JeUugf_X57Kypjt9QyP8SXzOl5RuXHCiUdHj8HHARTAw5EhdvHv.-DO0DWyGXzEBi9h9][Video]]*   |
+|-------------------+--------------+----------------------------------------------+-----------|
+| *FRI: 2022-05-06* |              | *Final GIT Pull*                             |           |
+|-------------------+--------------+----------------------------------------------+-----------|
+
+------------
++ *[[./RegisteredStudents][Registered_Students]]*
+------------
++ *[[https://github.tamu.edu/DigitalBiology/Digital_Biology_2022/blob/master/00Data/BIOL647.pdf][Syllabus: BIOL647 - Digital Biology]]*
+
+# https://jimb.stanford.edu/erccdashboard
+# https://www.nist.gov/mml/bbd/core-capabilities/genomic-measurements
+# https://www.nist.gov/sites/default/files/documents/mml/bmd/genetics/04-Salit-NGS-Standards-Talk.pdf
+# http://www.bioconductor.org/packages/release/bioc/html/erccdashboard.html
+# https://github.com/munrosa/erccdashboard
+
+# http://www.rnaseqforthenextgeneration.org/
+# http://www.rnaseqforthenextgeneration.org/protocols/index.html
+
+# lnu -l -j 8228540
+# ssh nxt1523
+# https://github.com/schatzlab/appliedgenomics2019 #<-IMPORTANT
+
+# tamu1.cyverse.org (128.196.65.40)
+# tamu2.cyverse.org (128.196.65.122)
+
+# + *SSHing Without Activating X11*
+#   : 
+#   : ssh username@tamu1.cyverse.org
+# + *SSHing Enabling X1*
+#   : ssh -Y username@tamu1.cyverse.org  #For macOS (preferably)
+#   : ssh -X username@tamu1.cyverse.org  #For MacOS and Other Systems
+#   : or
+#   : ssh -Y username@ada.tamu.edu #For MacOS (preferably)
+#   : ssh -X username@ada.tamu.edu #For MacOS or Other Systems
+#   : cd /scratch/group/biol647/

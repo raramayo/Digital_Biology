@@ -1,0 +1,736 @@
+# #+TITLE: Digital Biology
+#+AUTHOR: Rodolfo Aramayo
+#+EMAIL: raramayo@tamu.edu
+#+STARTUP: align
+* *Running HISAT2-StringTie-CuffDiff Pipeline*
+** *[[https://pubmed.ncbi.nlm.nih.gov/24895027/][Our Test Experimental Design]]*
+|------------------+-------------------+-------------------+-------------------|
+| Sample           | Exp. Replicate 01 | Exp. Replicate 02 | Exp. Replicate 03 |
+|------------------+-------------------+-------------------+-------------------|
+| Wild-Type        | WT01              | WT02              | WT03              |
+| Wild-Type-Cupper | WT_Cu01           | WT_Cu02           | WT_Cu03           |
+| Wild-Type-BPQ    | WT_BPQ01          | WT_BPQ02          | WT_BPQ03          |
+|------------------+-------------------+-------------------+-------------------|
+** *Datasets*
+In the directory:
+
+#+BEGIN_SRC sh
+  /scratch/group/biol647/DB2022_Shared/NGS_RNA_MappingAssembly_Data
+#+END_SRC
+
+we have the following datasets:
+
+#+BEGIN_SRC sh
+  -rw-rw-r-- 1 raramayo biol647 4435291261 Jun  9 17:27 WT01.fastq
+  -rw-rw-r-- 1 raramayo biol647 4612922057 Jun  9 17:27 WT02.fastq
+  -rw-rw-r-- 1 raramayo biol647 4135221990 Jun  9 17:27 WT03.fastq
+  -rw-rw-r-- 1 raramayo biol647 5218860853 Jun  9 17:27 BPQ01.fastq
+  -rw-rw-r-- 1 raramayo biol647 5471600826 Jun  9 17:27 BPQ02.fastq
+  -rw-rw-r-- 1 raramayo biol647 3434895628 Jun  9 17:27 BPQ03.fastq
+  -rw-rw-r-- 1 raramayo biol647 3019747719 Jun  9 17:27 Cu01.fastq
+  -rw-rw-r-- 1 raramayo biol647 2804322903 Jun  9 17:27 Cu02.fastq
+  -rw-rw-r-- 1 raramayo biol647 3111179975 Jun  9 17:27 Cu03.fastq
+#+END_SRC
+
+** *Mapping Reads with Running HISAT2*
++ We start by mapping the sequencing reads HISAT2 on each dataset. For this I am providing an example script named:
+
+  #+BEGIN_SRC sh
+    01.Run01.HISAT2.Scerevisiae.WT01.sh
+  #+END_SRC
+
+  + Located in:
+
+    #+BEGIN_SRC sh
+      /scratch/group/biol647/DB2022_Shared/NGS_RNA_MappingAssembly_Scripts
+    #+END_SRC
+
+    + The script has the following parts:
+*** Header:
+
+#+BEGIN_SRC sh
+  #! /bin/bash
+  #SBATCH --export=NONE
+  #SBATCH --job-name=01.Run01.HISAT2.Scerevisiae.WT01
+  #SBATCH --time=24:00:00
+  #SBATCH --ntasks-per-node=1
+  #SBATCH --cpus-per-task=20
+  #SBATCH --mem=360G
+  #SBATCH --output=/scratch/group/biol647/DB2022_00_Work/01.Run01.HISAT2.Scerevisiae.WT01.stdout.%j
+  #SBATCH --error=/scratch/group/biol647/DB2022_00_Work/01.Run01.HISAT2.Scerevisiae.WT01.stderr.%j
+#+END_SRC
+
+*** Module loading:
+
+#+BEGIN_SRC sh
+  module load GCC/9.3.0 OpenMPI/4.0.3 HISAT2/2.2.1
+#+END_SRC
+
+*** HISAT2 Command:
+
+#+BEGIN_SRC sh
+  hisat2 \
+      --dta \
+      -p 20 \
+      -x /scratch/group/biol647/DB2022_Shared/GenomeData/Scerevisiae_S288C_R64-2-1_Genome.fa.SpliceSitesExonNames \
+      -q \
+      -U /scratch/group/biol647/DB2022_Shared/NGS_RNA_MappingAssembly_Data/WT01.fastq \
+      -S /scratch/group/biol647/DB2022_00_Work/01.Run01.HISAT2.Scerevisiae.WT01.out.sam;
+#+END_SRC
+
+*** SAM Tools Post-Processing: Conversion, Sorting and Indexing
+
+#+BEGIN_SRC sh
+  module purge
+  module load GCC/10.2.0 SAMtools/1.11
+
+  samtools \
+      view \
+      -bS \
+      /scratch/group/biol647/DB2022_00_Work/01.Run01.HISAT2.Scerevisiae.WT01.out.sam \
+      | \
+      samtools \
+	  sort \
+	  -m 2G \
+	  -@ 20 - \
+	  -T WT01 \
+	  -o /scratch/group/biol647/DB2022_00_Work/01.Run01.HISAT2.Scerevisiae.WT01.out.bam;
+
+  samtools \
+      index \
+      /scratch/group/biol647/DB2022_00_Work/01.Run01.HISAT2.Scerevisiae.WT01.out.bam;
+#+END_SRC
+
+** *Assembling Mapped Reads Using Stringtie*
++ After Mapping, we now need to Assemble the reads using StringTie
++ For this I am providing an example script named:
+
+  #+BEGIN_SRC sh
+    02.Run01.Stringtie.Scerevisiae.WT01.sh
+  #+END_SRC
+
+  + Located in:
+
+    #+BEGIN_SRC sh
+      /scratch/group/biol647/DB2022_Shared/NGS_RNA_MappingAssembly_Scripts
+    #+END_SRC
+
+    + The script has the following parts:
+*** Header:
+
+#+BEGIN_SRC sh
+  #! /bin/bash
+  #SBATCH --export=NONE
+  #SBATCH --job-name=02.Run01.Stringtie.Scerevisiae.WT01
+  #SBATCH --time=24:00:00
+  #SBATCH --ntasks-per-node=1
+  #SBATCH --cpus-per-task=20
+  #SBATCH --mem=360G
+  #SBATCH --output=/scratch/group/biol647/DB2022_00_Work/02.Run01.Stringtie.Scerevisiae.WT01.stdout.%j
+  #SBATCH --error=/scratch/group/biol647/DB2022_00_Work/02.Run01.Stringtie.Scerevisiae.WT01.stderr.%j
+#+END_SRC
+
+*** Module loading:
+
+#+BEGIN_SRC sh
+  module load GCC/7.3.0-2.30  OpenMPI/3.1.1 StringTie/2.1.0
+#+END_SRC
+
+*** Stringtie Command:
+
+#+BEGIN_SRC sh
+  stringtie \
+      /scratch/group/biol647/DB2022_00_Work/01.Run01.HISAT2.Scerevisiae.WT01.out.bam \
+      -e \
+      -G /scratch/group/biol647/DB2022_Shared/GenomeData/Scerevisiae_R64-2-1_Mapping.gtf \
+      -o /scratch/group/biol647/DB2022_00_Work/02.Run01.Stringtie.Scerevisiae.WT01.out.gtf \
+      -p 20
+#+END_SRC
+
+*** Analysis of the Script Input and Output Files:
+**** Input File (BAM Format):
+
+#+BEGIN_SRC sh
+  01.Run01.HISAT2.Scerevisiae.WT01.out.bam
+#+END_SRC
+
+**** Output File (GTF Format):
+
+#+BEGIN_SRC sh
+  02.Run01.Stringtie.Scerevisiae.WT01.out.gtf
+#+END_SRC
+
+** *Comparing Mapped/Assembled Reads Running CuffDiff*
++ In order to compare the different assemblies we need to =merge= the
+  results of all assemblies
++ Before we can =merge= the assemblies, however, we first nee to first
+  need to generate a file containing the names of all the =GTF= files
+  that are going to be used in the =mergin= step
++ In this case, we would need to generate a file named
+  =03.Run01.MergingGTFs=
+*** File =03.Run01.MergingGTFs= Generation:
+**** In your working directory run:
+
+#+BEGIN_SRC sh
+  for i in *gtf;do echo $(pwd)/$i;done >> 03.Run01.MergingGTFs
+#+END_SRC
+
+**** The final content of the file =03.Run01.MergingGTFs= should be:
+
+#+BEGIN_SRC sh
+  /scratch/group/biol647/DB2022_00_Work/02.Run01.Stringtie.Scerevisiae.BPQ01.out.gtf
+  /scratch/group/biol647/DB2022_00_Work/02.Run01.Stringtie.Scerevisiae.BPQ02.out.gtf
+  /scratch/group/biol647/DB2022_00_Work/02.Run01.Stringtie.Scerevisiae.BPQ03.out.gtf
+  /scratch/group/biol647/DB2022_00_Work/02.Run01.Stringtie.Scerevisiae.Cu01.out.gtf
+  /scratch/group/biol647/DB2022_00_Work/02.Run01.Stringtie.Scerevisiae.Cu02.out.gtf
+  /scratch/group/biol647/DB2022_00_Work/02.Run01.Stringtie.Scerevisiae.Cu03.out.gtf
+  /scratch/group/biol647/DB2022_00_Work/02.Run01.Stringtie.Scerevisiae.WT01.out.gtf
+  /scratch/group/biol647/DB2022_00_Work/02.Run01.Stringtie.Scerevisiae.WT02.out.gtf
+  /scratch/group/biol647/DB2022_00_Work/02.Run01.Stringtie.Scerevisiae.WT03.out.gtf
+#+END_SRC
+
+*** Merging of the =Stringtie= GTFs:
++ After generating the merging reference file, we now need to
+  actually *merge* the GTF files
++ For this I am providing an example script named:
+
+  #+BEGIN_SRC sh
+    04.Run01.MergedStringtieGTF.gtf.Scerevisiae.sh
+  #+END_SRC
+
+  + Located in:
+
+    #+BEGIN_SRC sh
+      /scratch/group/biol647/DB2022_Shared/NGS_RNA_MappingAssembly_Scripts
+    #+END_SRC
+
+    + The script has the following parts:
+**** Header:
+
+#+BEGIN_SRC sh
+  #! /bin/bash
+  #SBATCH --export=NONE
+  #SBATCH --job-name=04.Run01.MergedStringtieGTF.gtf.Scerevisiae
+  #SBATCH --time=24:00:00
+  #SBATCH --ntasks-per-node=1
+  #SBATCH --cpus-per-task=20
+  #SBATCH --mem=360G
+  #SBATCH --output=/scratch/group/biol647/DB2022_00_Work/04.Run01.MergedStringtieGTF.gtf.Scerevisiae.stdout.%j
+  #SBATCH --error=/scratch/group/biol647/DB2022_00_Work/04.Run01.MergedStringtieGTF.gtf.Scerevisiae.stderr.%j
+#+END_SRC
+
+**** Module loading:
+
+#+BEGIN_SRC sh
+  module load GCC/7.3.0-2.30  OpenMPI/3.1.1 StringTie/2.1.0
+#+END_SRC
+
+**** Stringtie Command:
+
+#+BEGIN_SRC sh
+  stringtie \
+      --merge \
+      /scratch/group/biol647/DB2022_00_Work/03.Run01.MergingGTFs \
+      -p 20 \
+      -G /scratch/group/biol647/DB2022_Shared/GenomeData/Scerevisiae_R64-2-1_Mapping.gtf \
+      -o /scratch/group/biol647/DB2022_00_Work/04.Run01.MergedStringtieGTF.gtf
+#+END_SRC
+
+**** Script Input and Output Files Analysis:
+***** Input File (Text File Reference File):
+
+#+BEGIN_SRC sh
+  03.Run01.MergingGTFs
+#+END_SRC
+
+***** Output File (One File in GTF Format):
+
+#+BEGIN_SRC sh
+  04.Run01.MergedStringtieGTF.gtf
+#+END_SRC
+
+*** *Running CuffDiff Itself*
++ Next, we need to run =cuffdiff=
+**** Running CuffDiff Considerations:
++ CuffDiff has the following library normalization parameters:
+  + Geometric
+  + Classis-fpkm
+  + Quartile
++ If you do not have replicates, you must use the *blind* dispersion
+  estimation method
++ We should also use a False Discovery (P-Value) Rate of 0.05
++ We must test the "*Null*" Hypothesis, this is, that all these datasets
+  are identical
++ We must also test the "Expected" Hypothesis that samples:
+  + '*Wild-Type*',
+  + '*Wild-Type-Cupper*' and
+  + '*Wild-Type-BPQ*' are different
++ For Wild-Type make sure to test if the type of 'Library
+  normalization method' used makes a difference. For this you will
+  need to run 'geometric', 'classis-fpkm' and 'quartile' normalization
+  methods. Importantly, when testing the 'null' hypothesis, make sure
+  to use the 'blind' dispersion estimation method. Use a False
+  Discovery Rate of 0.05 and all other parameters 'standard'
++ Then determine:
+  + The variability between: WT01, WT02 and WT03
+  + The variability between: WT_Cu01, WT_Cu02 and WT_Cu03
+  + The variability between: WT_BPQ01, WT_BPQ02 and WT_BPQ03
++ Compare:
+  + The "Null" Hypothesis, this is, that all these datasets are identical
+  + The "Expected" Hypothesis that samples:
+    + 'Wild-Type'
+    + 'Wild-Type-Cupper' and
+    + 'Wild-Type-BPQ' are different
++ Use default parameters for: Min Alignment Count, Use multi-read correct, Bias Correction, etc.
+**** Running CuffDiff
++ To run =cuffdiff= I am providing two sample scripts named:
+
+  #+BEGIN_SRC sh
+    05.Run01.cuffdiff.geometric.blind.Scerevisiae.sh
+    06.Run01.cuffdiff.geometric.percondition.Scerevisiae.sh
+  #+END_SRC
+
++ Both scripts are located in:
+
+  #+BEGIN_SRC sh
+    /scratch/group/biol647/DB2022_Shared/NGS_RNA_MappingAssembly_Scripts
+  #+END_SRC
+
++ The scripts are different, although they both have the similar parts:
+***** Geometric-Blind:
+
+#+BEGIN_SRC sh
+  #! /bin/bash
+  #SBATCH --export=NONE
+  #SBATCH --job-name=05.Run01.cuffdiff.geometric.blind.Scerevisiae
+  #SBATCH --time=24:00:00
+  #SBATCH --ntasks-per-node=1
+  #SBATCH --cpus-per-task=20
+  #SBATCH --mem=360G
+  #SBATCH --output=/scratch/group/biol647/DB2022_00_Work/05.Run01.cuffdiff.geometric.blind.Scerevisiae.stdout.%j
+  #SBATCH --error=/scratch/group/biol647/DB2022_00_Work/05.Run01.cuffdiff.geometric.blind.Scerevisiae.stderr.%j
+
+  module load GCC/8.2.0-2.31.1  OpenMPI/3.1.3 Cufflinks/20190706
+
+  cuffdiff \
+      --no-update-check \
+      --output-dir /scratch/group/biol647/DB2022_00_Work/05.Run01.cuffdiff.geometric.blind \
+      --labels wt01,wt02,wt03,bpq01,bpq02,bpq03,cu01,cu02,cu03 \
+      --frag-bias-correct /scratch/group/biol647/DB2022_Shared/GenomeData/Scerevisiae_S288C_R64-2-1_Genome.fa \
+      --multi-read-correct \
+      --num-threads 20 \
+      --library-norm-method geometric \
+      --dispersion-method blind \
+      --min-alignment-count 10 \
+      /scratch/group/biol647/DB2022_00_Work/04.Run01.MergedStringtieGTF.gtf \
+      /scratch/group/biol647/DB2022_00_Work/01.Run01.HISAT2.Scerevisiae.WT01.out.bam /scratch/group/biol647/DB2022_00_Work/01.Run01.HISAT2.Scerevisiae.WT02.out.bam /scratch/group/biol647/DB2022_00_Work/01.Run01.HISAT2.Scerevisiae.WT03.out.bam \
+      /scratch/group/biol647/DB2022_00_Work/01.Run01.HISAT2.Scerevisiae.BPQ01.out.bam /scratch/group/biol647/DB2022_00_Work/01.Run01.HISAT2.Scerevisiae.BPQ02.out.bam /scratch/group/biol647/DB2022_00_Work/01.Run01.HISAT2.Scerevisiae.BPQ03.out.bam \
+      /scratch/group/biol647/DB2022_00_Work/01.Run01.HISAT2.Scerevisiae.Cu01.out.bam /scratch/group/biol647/DB2022_00_Work/01.Run01.HISAT2.Scerevisiae.Cu02.out.bam /scratch/group/biol647/DB2022_00_Work/01.Run01.HISAT2.Scerevisiae.Cu03.out.bam
+#+END_SRC
+
+****** Dissecting the Geometric-Blind Command:
++ To help you visualize the command I will remove the string: =/scratch/group/biol647/DB2022_00_Work/=:
+
+  #+BEGIN_SRC sh
+    04.Run01.MergedStringtieGTF.gtf \
+	01.Run01.HISAT2.Scerevisiae.WT01.out.bam 01.Run01.HISAT2.Scerevisiae.WT02.out.bam 01.Run01.HISAT2.Scerevisiae.WT03.out.bam \
+	01.Run01.HISAT2.Scerevisiae.BPQ01.out.bam 01.Run01.HISAT2.Scerevisiae.BPQ02.out.bam 01.Run01.HISAT2.Scerevisiae.BPQ03.out.bam \
+	01.Run01.HISAT2.Scerevisiae.Cu01.out.bam 01.Run01.HISAT2.Scerevisiae.Cu02.out.bam 01.Run01.HISAT2.Scerevisiae.Cu03.out.bam
+  #+END_SRC
+
++ Note how the =BAM= files are loaded after caling the =GTF=
+  file. This is: *SPACES (NOT COMMAS) between experimental replicates and conditions*
++ In other words, all samples are treated as if they were
+  experimental replicates
+***** Geometric Per-Condition:
+
+#+BEGIN_SRC sh
+  #! /bin/bash
+  #SBATCH --export=NONE
+  #SBATCH --job-name=06.Run01.cuffdiff.geometric.percondition.Scerevisiae
+  #SBATCH --time=24:00:00
+  #SBATCH --ntasks-per-node=1
+  #SBATCH --cpus-per-task=20
+  #SBATCH --mem=360G
+  #SBATCH --output=/scratch/group/biol647/DB2022_00_Work/06.Run01.cuffdiff.geometric.percondition.Scerevisiae.stdout.%j
+  #SBATCH --error=/scratch/group/biol647/DB2022_00_Work/06.Run01.cuffdiff.geometric.percondition.Scerevisiae.stderr.%j
+
+  module load GCC/8.2.0-2.31.1  OpenMPI/3.1.3 Cufflinks/20190706
+
+  cuffdiff \
+      --no-update-check \
+      --output-dir /scratch/group/biol647/DB2022_00_Work/06.Run01.cuffdiff.geometric.percondition \
+      --labels wt,bpq,cu \
+      --frag-bias-correct /scratch/group/biol647/DB2022_Shared/GenomeData/Scerevisiae_S288C_R64-2-1_Genome.fa \
+      --multi-read-correct \
+      --num-threads 20 \
+      --library-norm-method geometric \
+      --dispersion-method per-condition \
+      --min-alignment-count 10 \
+      /scratch/group/biol647/DB2022_00_Work/04.Run01.MergedStringtieGTF.gtf \
+      /scratch/group/biol647/DB2022_00_Work/01.Run01.HISAT2.Scerevisiae.WT01.out.bam,/scratch/group/biol647/DB2022_00_Work/01.Run01.HISAT2.Scerevisiae.WT02.out.bam,/scratch/group/biol647/DB2022_00_Work/01.Run01.HISAT2.Scerevisiae.WT03.out.bam \
+      /scratch/group/biol647/DB2022_00_Work/01.Run01.HISAT2.Scerevisiae.BPQ01.out.bam,/scratch/group/biol647/DB2022_00_Work/01.Run01.HISAT2.Scerevisiae.BPQ02.out.bam,/scratch/group/biol647/DB2022_00_Work/01.Run01.HISAT2.Scerevisiae.BPQ03.out.bam \
+      /scratch/group/biol647/DB2022_00_Work/01.Run01.HISAT2.Scerevisiae.Cu01.out.bam,/scratch/group/biol647/DB2022_00_Work/01.Run01.HISAT2.Scerevisiae.Cu02.out.bam,/scratch/group/biol647/DB2022_00_Work/01.Run01.HISAT2.Scerevisiae.Cu03.out.bam
+#+END_SRC
+
+****** Dissecting the Geometric Per-Condition Command:
++ To help you visualize the command I will remove the string: =/scratch/group/biol647/DB2022_00_Work/=:
+
+  #+BEGIN_SRC sh
+    04.Run01.MergedStringtieGTF.gtf \
+	01.Run01.HISAT2.Scerevisiae.WT01.out.bam,01.Run01.HISAT2.Scerevisiae.WT02.out.bam,01.Run01.HISAT2.Scerevisiae.WT03.out.bam \
+	01.Run01.HISAT2.Scerevisiae.BPQ01.out.bam,01.Run01.HISAT2.Scerevisiae.BPQ02.out.bam,01.Run01.HISAT2.Scerevisiae.BPQ03.out.bam \
+	01.Run01.HISAT2.Scerevisiae.Cu01.out.bam,01.Run01.HISAT2.Scerevisiae.Cu02.out.bam,01.Run01.HISAT2.Scerevisiae.Cu03.out.bam
+  #+END_SRC
+
++ Note how the =BAM= files are loaded after caling the =GTF=
+  file. This is: *COMMAS (NOT SPACES) between experimental replicates and SPACES (NOT COMMAS) between experimental conditions*
+** *Running CummeRbund*
+*** [[https://www.bioconductor.org/][Introduction to Bioconductor]]
+*** Install and/or Open [[https://www.rstudio.com/products/rstudio/download/][RStudio]]
+# Log into: [[https://portal-grace.hprc.tamu.edu][Grace Portal]]
+We'll be using RStudio: a free, open source R integrated
+development environment. It provides a built in editor, works on
+all platforms (including on servers) and provides many advantages
+such as integration with version control and project management.
+**** Basic layout
+When you first open RStudio, you will be greeted by three panels:
++ The interactive R console (entire left)
++ Environment/History (tabbed in upper right)
++ Files/Plots/Packages/Help/Viewer (tabbed in lower right)
++ Once you open files, such as R scripts, an editor panel will also open in the top left
+*** Preparing the analysis:
+1. Create a directory called =zzData= in your =DB2022_xx_Work= directory
+2. Copy to =zzData= the following directories:
+
+   #+BEGIN_SRC sh
+     /scratch/group/biol647/DB2022_00_Work/05.Run01.cuffdiff.geometric.blind
+     /scratch/group/biol647/DB2022_00_Work/06.Run01.cuffdiff.geometric.percondition
+   #+END_SRC
+
+3. Copy both the genome fasta file and the genome GTF file into each one of the CummeRbund directories
+   + Use the: =04.Run01.MergedStringtieGTF.gtf= file
+   + Loading the =04.Run01.MergedStringtieGTF.gtf= would allow you visualize the result of the =GTF= file merging
+   + If you ever want to display the =BAM= files you generated, us the =04.Run01.MergedStringtieGTF= file in =IGV=
+
+     #+BEGIN_SRC sh
+       /scratch/group/biol647/DB2022_Shared/GenomeData/Scerevisiae_S288C_R64-2-1_Genome.fa
+       /scratch/group/biol647/DB2022_xx_Work/04.Run01.MergedStringtieGTF.gtf
+     #+END_SRC
+
+   # cp -vR /scratch/group/biol647/DB2022_00_Work/05.Run01.cuffdiff.geometric.blind ./zzData/
+   # cp -v /scratch/group/biol647/DB2022_00_Work/04.Run01.MergedStringtieGTF.gtf ./zzData/05.Run01.cuffdiff.geometric.blind
+   # cp -v /scratch/group/biol647/DB2022_Shared/GenomeData/Scerevisiae_R64-2-1_Mapping.gtf ./zzData/05.Run01.cuffdiff.geometric.blind
+   # cp -v /scratch/group/biol647/DB2022_Shared/GenomeData/Scerevisiae_S288C_R64-2-1_Genome.fa ./zzData/05.Run01.cuffdiff.geometric.blind
+
+   # cp -vR /scratch/group/biol647/DB2022_00_Work/06.Run01.cuffdiff.geometric.percondition ./zzData/
+   # cp -v /scratch/group/biol647/DB2022_00_Work/04.Run01.MergedStringtieGTF.gtf ./zzData/06.Run01.cuffdiff.geometric.percondition
+   # cp -v /scratch/group/biol647/DB2022_Shared/GenomeData/Scerevisiae_R64-2-1_Mapping.gtf ./zzData/06.Run01.cuffdiff.geometric.percondition
+   # cp -v /scratch/group/biol647/DB2022_Shared/GenomeData/Scerevisiae_S288C_R64-2-1_Genome.fa ./zzData/06.Run01.cuffdiff.geometric.percondition
+
+*** Set R Working Directory for Geometric-Blind Analysis:
+
+#+BEGIN_SRC R
+  setwd("/scratch/group/biol647/DB2022_xx_Work/zzData/05.Run01.cuffdiff.geometric.blind")
+#+END_SRC
+
+*** Install [[https://www.bioconductor.org/packages/release/bioc/html/cummeRbund.html][CummeRbund]]
+*** [[https://www.bioconductor.org/packages/3.7/bioc/vignettes/cummeRbund/inst/doc/cummeRbund-manual.pdf][CummeRbund Manual]]
+*** Build Database
++ To build *cuffData.db* file with readCufflinks() you need to provide 'gtfFile' and 'genome' files
+
+  #+BEGIN_SRC R
+    cuff<-readCufflinks(gtfFile='./04.Run01.MergedStringtieGTF.gtf',genome='./Scerevisiae_S288C_R64-2-1_Genome.fa')
+  #+END_SRC
+
+  + Peek at the Genome:
+
+  #+BEGIN_SRC R
+    cuff
+  #+END_SRC
+*** Global statistics and Quality Control
++ To obtain a Scatter Plot comparing the mean counts against the
+  estimated dispersion for a given level of features from a Cuffdiff
+  run:
+
+  #+BEGIN_SRC R
+    disp<-dispersionPlot(genes(cuff))
+
+    disp
+  #+END_SRC
+
+  + The squared coefficient of variation is a normalized measure of
+    cross-replicate variability that can be useful for evaluating the
+    quality your RNA-seq data. Differences in CV2 can result in lower
+    numbers of differentially expressed genes due to a higher degree
+    of variability between replicate fpkm estimates.
+
+  #+BEGIN_SRC R
+    genes.scv<-fpkmSCVPlot(genes(cuff))
+
+    genes.scv
+
+    isoforms.scv<-fpkmSCVPlot(isoforms(cuff))
+
+    isoforms.scv
+  #+END_SRC
+
+  #+BEGIN_SRC R
+    dend<-csDendro(genes(cuff))
+
+    dend
+
+    dend.rep<-csDendro(genes(cuff),replicates=T)
+
+    dend.rep
+  #+END_SRC
+
+  + MvsA plots can be useful to determine any systematic bias that may be present between conditions. The CuffData
+method MAplot() can be used to examine these intensity vs fold-change
+plots. You must specify the sample names to use for the pairwise
+comparison with x and y.
+
+#+BEGIN_SRC R
+  m<-MAplot(genes(cuff),"wt01","bpq02")
+
+  m
+#+END_SRC
+
++ Dimensionality reduction is an informative approach for clustering
+  and exploring the relationships between conditions. It can be useful
+  for feature selection as well as identifying the sources of
+  variability within your data. To this end, we have applied two
+  diferent dimensionality reduction strategies in cummeRbund:
+  principal component analysis (PCA) and multi-dimensional scaling
+  (MDS). We provide the two wrapper methods, PCAplot and MDSplot
+
+#+BEGIN_SRC R
+  genes.PCA<-PCAplot(genes(cuff),)
+
+  genes.PCA
+
+  genes.PCA.rep<-PCAplot(genes(cuff),replicates=T)
+
+  genes.PCA.rep
+#+END_SRC
+
+#+BEGIN_SRC R
+  genes.MDS.rep<-MDSplot(genes(cuff),replicates=T)
+
+  genes.MDS.rep
+#+END_SRC
+
++ To assess the distributions of FPKM scores across samples, you can use the csDensity plot
+
+  #+BEGIN_SRC R
+    dens<-csDensity(genes(cuff))
+
+    dens
+  #+END_SRC
+
+  + Creates a smoothed density plot that includes replicates for the samples
+
+    #+BEGIN_SRC R
+      densRep<-csDensity(genes(cuff),replicates=T)
+
+      densRep
+    #+END_SRC
+
+  + Displaying summary statistics for FPKM value across samples
+
+    #+BEGIN_SRC R
+      b<-csBoxplot(genes(cuff))
+
+      b
+    #+END_SRC
+
+  + Displaying summary statistics for FPKM value across samples inclusive of replicates
+
+    #+BEGIN_SRC R
+      brep<-csBoxplot(genes(cuff),replicates=T)
+
+      brep
+    #+END_SRC
+
+  + A scatter plot comparing the FPKM values from all samples in a cuffdiff run
+
+    #+BEGIN_SRC R
+      s<-csScatterMatrix(genes(cuff))
+
+      s
+    #+END_SRC
+
+  + A scatter plot comparing the FPKM values from two samples in a cuffdiff run
+
+    #+BEGIN_SRC R
+      s<-csScatter(genes(cuff),"wt01","wt01",smooth=T)
+
+      s
+    #+END_SRC
+
+    #+BEGIN_SRC R
+      s<-csScatter(genes(cuff),"wt01","cu01",smooth=T)
+
+      s
+    #+END_SRC
+
+    #+BEGIN_SRC R
+      s<-csScatter(genes(cuff),"wt01","bpq01",smooth=T)
+
+      s
+    #+END_SRC
+
+  + Creates a volcano plot of log fold change in expression vs -log(pval) for all pairs of samples
+
+    #+BEGIN_SRC R
+      v<-csVolcanoMatrix(genes(cuff))
+    #+END_SRC
+
+  + Creates a volcano plot of log fold change in expression vs -log(pval) for a pair of samples
+
+    #+BEGIN_SRC R
+      v<-csVolcano(genes(cuff),"wt01","cu02")
+
+      v
+    #+END_SRC
+
+*** Creating Gene Sets
++ Retrieve significant gene IDs (XLOC) with a pre-specified alpha
+
+  #+BEGIN_SRC R
+    mc_diffGeneIDs<-getSig(cuff,x='wt01',y='cu01',alpha=0.05,level='genes')
+
+    mc_diffGeneIDs
+  #+END_SRC
+
++ Use returned identifiers to create a CuffGeneSet object with all relevant info for given genes
+
+  #+BEGIN_SRC R
+    mc_diffGenes<-getGenes(cuff,mc_diffGeneIDs)
+
+    mc_diffGenes
+  #+END_SRC
+
++ Gene short name values (and corresponding XLOC_* values) can be retrieved from the CuffGeneSet by using:
+
+  #+BEGIN_SRC R
+    featureNames(mc_diffGenes)
+  #+END_SRC
+
++ Creating Heat Maps
+
+  #+BEGIN_SRC R
+    h<-csHeatmap(mc_diffGenes,cluster='both')
+
+    h
+  #+END_SRC
+
+  #+BEGIN_SRC R
+    h.rep<-csHeatmap(mc_diffGenes,cluster='both',replicates=T)
+
+    h.rep
+  #+END_SRC
+
+*** Examining Individual Genes
++ An individual CuffGene object can be created by using the getGene() function for a given 'gene_id' or 'gene_short_name'
+
+  #+BEGIN_SRC R
+    mc_diffGeneID<-"FRE7"
+
+    mc_Fre7<-getGene(cuff,mc_diffGeneID)
+
+    mc_Fre7
+  #+END_SRC
+
++ Creating a barplot of FPKM values with confidence intervals for a given gene, set of genes, or features of a gene (e.g. isoforms, TSS, CDS, etc)
+
+  #+BEGIN_SRC R
+    gb<-expressionBarplot(mc_Fre7)
+
+    gb
+  #+END_SRC
+
++ Show replicates in barplot
+
+  #+BEGIN_SRC R
+    gb.rep<-expressionBarplot(mc_Fre7,replicates=T)
+
+    gb.rep
+  #+END_SRC
+
++ FAL1
+
+  #+BEGIN_SRC R
+    mc_diffGeneID<-"FAL1"
+
+    mc_FAL1<-getGene(cuff,mc_diffGeneID)
+  #+END_SRC
+
++ Creating a barplot of FPKM values with confidence intervals for a given gene, set of genes, or features of a gene (e.g. isoforms, TSS, CDS, etc)
+
+  #+BEGIN_SRC R
+    gb<-expressionBarplot(mc_FAL1)
+
+    gb
+  #+END_SRC
+
++ Show replicates in barplot
+
+  #+BEGIN_SRC R
+    gb.rep<-expressionBarplot(mc_FAL1,replicates=T)
+
+    gb.rep
+  #+END_SRC
+
++ Features/Annotation
+
+  #+BEGIN_SRC R
+    gene.features<-annotation(genes(cuff))
+
+    head(gene.features)
+
+    gene.fpkm<-fpkm(genes(cuff))
+
+    head(gene.fpkm)
+
+    gene.repFpkm<-repFpkm(genes(cuff))
+
+    head(gene.repFpkm)
+  #+END_SRC
+
++ Finding Similar Genes
+  + Another common question in large-scale gene expression analyses is
+    'How can I and genes with similar expression probles to gene
+    x?'. We have implemented a method, fndSimilar to allow you to
+    identify a fxed number of the most similar genes to a given gene
+    of interest. For example, if you wanted to and the 20 genes most
+    similar to "FRET7", you could do the following:
+
+  #+BEGIN_SRC R
+    mySimilar<-findSimilar(cuff,"FRE7",n=20)
+
+    mySimilar.expression<-expressionPlot(mySimilar,logMode=T,showErrorbars=F)
+
+    mySimilar.expression
+  #+END_SRC
+
+  #+BEGIN_SRC R
+    myProfile<-c(500,0,400)
+
+    mySimilar2<-findSimilar(cuff,myProfile,n=10)
+
+    mySimilar2.expression<-expressionPlot(mySimilar2,logMode=T,showErrorbars=F)
+
+    mySimilar2.expression
+  #+END_SRC
+
++ Cuffdiff run information
+
+  #+BEGIN_SRC R
+    runInfo(cuff)
+
+    replicates(cuff)
+  #+END_SRC
+* 
+| *Navigation:*             | *[[https://github.tamu.edu/DigitalBiology/BIOL647_Digital_Biology_2021_Summer/wiki][Home]]*                                                                       |
+| *Author: [[raramayo@tamu.edu][Rodolfo Aramayo]]* | *License: [[http://creativecommons.org/licenses/by-nc-sa/4.0/][All content produced in this site is licensed by: CC BY-NC-SA 4.0]]* |

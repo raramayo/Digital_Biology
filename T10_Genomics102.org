@@ -1,0 +1,865 @@
+# #+TITLE: Digital Biology
+#+AUTHOR: Rodolfo Aramayo
+#+EMAIL: raramayo@tamu.edu
+#+STARTUP: align
+* *Genomics102*
+** *[[https://bioconda.github.io/user/install.html][BIOCONDA]]*
+*** Installing Bioconda
+
+#+BEGIN_SRC sh
+  cd $HOME/codecache
+  curl -O https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+  sh Miniconda3-latest-Linux-x86_64.sh
+#+END_SRC
+
+Wait the process to finish and agree as desired
+
+Log out and log back in
+
+#+BEGIN_SRC sh
+  bedtools --version
+  conda config --add channels defaults
+  conda config --add channels bioconda
+  conda config --add channels conda-forge
+  conda create -n bioinfosoft bedtools
+  conda env list
+  conda activate bioinfosoft
+  bedtools --version
+#+END_SRC
+
+** *BED Tools*
+*** [[https://bedtools.readthedocs.io/en/latest/index.html][BEDTools: a powerful toolset for genome arithmetic]]
+*** [[https://bedtools.readthedocs.io/en/latest/content/overview.html][Overview]]
+** *[[https://github.com/arq5x/tutorials/blob/master/bedtools.md][BEDTools Tutorial]]*
+
+Adapted from Aaron Quinlan's tutorial
+
+*** Synopsis
+    :PROPERTIES:
+    :CUSTOM_ID: synopsis
+    :END:
+
+Our goal is to work through examples that demonstrate how to explore,
+process and manipulate genomic interval files (e.g., BED, VCF, BAM)
+with the =bedtools= software package
+
+Some of our analysis will be based upon the Maurano
+et. al. exploration of DnaseI hypersensitivity sites in hundreds of
+primary tissue types
+
+#+BEGIN_EXAMPLE
+  Maurano et al. Systematic Localization of Common Disease-Associated Variation in Regulatory DNA
+  Science. 2012. Vol. 337 no. 6099 pp. 1190-1195
+
+  www.sciencemag.org/content/337/6099/1190.short
+#+END_EXAMPLE
+
+This tutorial is merely meant as an introduction to whet your
+appetite.  There are many, many more tools and options than presented
+here. We therefore encourage you to read the bedtools [[https://bedtools.readthedocs.io/en/latest/][documentation]]
+
+NOTE: We recommend making your browser window as large as possible
+because some of the examples yield “wide” results and more screen real
+estate will help make the results clearer
+
+*** Setup
+    :PROPERTIES:
+    :CUSTOM_ID: setup
+    :END:
+
+#+BEGIN_SRC sh
+  mkdir -p $HOME/Database/bedtools_tutorial
+  cd $HOME/Database/bedtools_tutorial
+#+END_SRC
+
++ Download the sample BED files
+
+#+BEGIN_SRC sh
+  curl -O https://s3.amazonaws.com/bedtools-tutorials/web/maurano.dnaseI.tgz
+  curl -O https://s3.amazonaws.com/bedtools-tutorials/web/cpg.bed
+  curl -O https://s3.amazonaws.com/bedtools-tutorials/web/exons.bed
+  curl -O https://s3.amazonaws.com/bedtools-tutorials/web/gwas.bed
+  curl -O https://s3.amazonaws.com/bedtools-tutorials/web/genome.txt
+  curl -O https://s3.amazonaws.com/bedtools-tutorials/web/hesc.chromHmm.bed
+#+END_SRC
+
+Now, we need to extract all of the 20 Dnase I hypersensitivity BED
+files from the “tarball” named =maurano.dnaseI.tgz=
+
+#+BEGIN_SRC sh
+  tar -zxvf maurano.dnaseI.tgz
+  rm maurano.dnaseI.tgz
+#+END_SRC
+
++ Let's take a look at what files we now have
+
+#+BEGIN_SRC sh
+  ls -1
+#+END_SRC
+
+*** What are these files?
+:PROPERTIES:
+:CUSTOM_ID: what-are-these-files
+:END:
+
+Your directory should now contain 23 BED files and 1 genome file. Twenty
+of these files (those starting with “f” for “fetal tissue”) reflect
+Dnase I hypersensitivity sites measured in twenty different fetal tissue
+samples from the brain, heart, intestine, kidney, lung, muscle, skin,
+and stomach.
+
+In addition: =cpg.bed= represents CpG islands in the human genome;
+=exons.bed= represents RefSeq exons from human genes; =gwas.bed=
+represents human disease-associated SNPs that were identified in
+genome-wide association studies (GWAS); =hesc.chromHmm.bed= represents
+the predicted function (by chromHMM) of each interval in the genome of a
+human embryonic stem cell based upon ChIP-seq experiments from ENCODE.
+
+The latter 4 files were extracted from the UCSC Genome Browser's
+[[https://genome.ucsc.edu/cgi-bin/hgTables][Table Browser]]
+
+In order to have a rough sense of the data, let's load the =cpg.bed=,
+=exons.bed=, =gwas.bed=, and =hesc.chromHmm.bed= files into [[http://www.broadinstitute.org/igv/][IGV]]. To do
+this, launch IGV, then click File->Load from File. Then select the
+four files. IGV will warn you that you need to create an index for a
+couple of the files.  Just click OK, as these indices are created
+automatically and speed up the processing for IGV
+
+Visualization in IGV or other browsers such as UCSC is a tremendously
+useful way to make sure that your results make sense to your eye.
+Conveniently, a subset of bedtools is built-into IGV!
+
+*** The bedtools help
+    :PROPERTIES:
+    :CUSTOM_ID: the-bedtools-help
+    :END:
+
+Bedtools is a command-line tool. To bring up the help, just type
+
+#+BEGIN_SRC sh
+  bedtools
+#+END_SRC
+
+As you can see, there are multiple “subcommands” and for bedtools to
+work you must tell it which subcommand you want to use. Examples:
+
+#+BEGIN_SRC sh
+  bedtools intersect
+  bedtools merge
+  bedtools subtract
+#+END_SRC
+
+What version am I using?
+
+#+BEGIN_SRC sh
+  bedtools --version
+#+END_SRC
+
+How can I get more help?
+
+#+BEGIN_SRC sh
+  bedtools --contact
+#+END_SRC
+
+*** bedtools “intersect”
+    :PROPERTIES:
+    :CUSTOM_ID: bedtools-intersect
+    :END:
+
+The =intersect= command is the workhorse of the =bedtools= suite. It
+compares two or more BED/BAM/VCF/GFF files and identifies all the
+regions in the gemome where the features in the two files overlap (that
+is, share at least one base pair in common)
+
+| [[./00Data/T10_GenesGFilesGBrowsers/01_intersect-glyph.png]] |
+
+**** Default behavior
+     :PROPERTIES:
+     :CUSTOM_ID: default-behavior
+     :END:
+
+By default, =intersect= reports the intervals that represent overlaps
+between your two files. To demonstrate, let's identify all of the CpG
+islands that overlap exons
+
+#+BEGIN_SRC sh
+  bedtools intersect -a cpg.bed -b exons.bed | head -5
+  chr1    29320   29370   CpG:_116
+  chr1    135124  135563  CpG:_30
+  chr1    327790  328229  CpG:_29
+  chr1    327790  328229  CpG:_29
+  chr1    327790  328229  CpG:_29
+#+END_SRC
+
+NOTE: In this case, the intervals reported are NOT the original CpG
+intervals, but rather a refined interval reflecting solely the portion
+of each original CpG interval that overlapped with the exon(s)
+
+**** Reporting the original feature in each file
+     :PROPERTIES:
+     :CUSTOM_ID: reporting-the-original-feature-in-each-file
+     :END:
+
+The =-wa= (write A) and =-wb= (write B) options allow one to see the
+original records from the A and B files that overlapped. As such,
+instead of not only showing you /where/ the intersections occurred, it
+shows you /what/ intersected
+
+#+BEGIN_SRC sh
+  bedtools intersect -a cpg.bed -b exons.bed -wa -wb \
+      | head -5
+  chr1    28735   29810   CpG:_116    chr1    29320   29370   NR_024540_exon_10_0_chr1_29321_r        -
+  chr1    135124  135563  CpG:_30 chr1    134772  139696  NR_039983_exon_0_0_chr1_134773_r    0   -
+  chr1    327790  328229  CpG:_29 chr1    324438  328581  NR_028322_exon_2_0_chr1_324439_f    0   +
+  chr1    327790  328229  CpG:_29 chr1    324438  328581  NR_028325_exon_2_0_chr1_324439_f    0   +
+  chr1    327790  328229  CpG:_29 chr1    327035  328581  NR_028327_exon_3_0_chr1_327036_f    0   +
+#+END_SRC
+
+**** How many base pairs of overlap were there?
+     :PROPERTIES:
+     :CUSTOM_ID: how-many-base-pairs-of-overlap-were-there
+     :END:
+
+The =-wo= (write overlap) option allows one to also report the /number/
+of base pairs of overlap between the features that overlap between each
+of the files
+
+#+BEGIN_SRC sh
+  bedtools intersect -a cpg.bed -b exons.bed -wo \
+      | head -10
+  chr1    28735   29810   CpG:_116    chr1    29320   29370   NR_024540_exon_10_0_chr1_29321_r        -   50
+  chr1    135124  135563  CpG:_30 chr1    134772  139696  NR_039983_exon_0_0_chr1_134773_r    0       439
+  chr1    327790  328229  CpG:_29 chr1    324438  328581  NR_028322_exon_2_0_chr1_324439_f    0       439
+  chr1    327790  328229  CpG:_29 chr1    324438  328581  NR_028325_exon_2_0_chr1_324439_f    0       439
+  chr1    327790  328229  CpG:_29 chr1    327035  328581  NR_028327_exon_3_0_chr1_327036_f    0       439
+  chr1    713984  714547  CpG:_60 chr1    713663  714068  NR_033908_exon_6_0_chr1_713664_r    0       84
+  chr1    762416  763445  CpG:_115    chr1    761585  762902  NR_024321_exon_0_0_chr1_761586_r        -   486
+  chr1    762416  763445  CpG:_115    chr1    762970  763155  NR_015368_exon_0_0_chr1_762971_f        +   185
+  chr1    762416  763445  CpG:_115    chr1    762970  763155  NR_047519_exon_0_0_chr1_762971_f        +   185
+  chr1    762416  763445  CpG:_115    chr1    762970  763155  NR_047520_exon_0_0_chr1_762971_f        +   185
+#+END_SRC
+
+**** Counting the number of overlapping features
+     :PROPERTIES:
+     :CUSTOM_ID: counting-the-number-of-overlapping-features
+     :END:
+
+We can also count, for each feature in the “A” file, the number of
+overlapping features in the “B” file. This is handled with the =-c=
+option
+
+#+BEGIN_SRC sh
+  bedtools intersect -a cpg.bed -b exons.bed -c \
+      | head
+  chr1    28735   29810   CpG:_116    1
+  chr1    135124  135563  CpG:_30 1
+  chr1    327790  328229  CpG:_29 3
+  chr1    437151  438164  CpG:_84 0
+  chr1    449273  450544  CpG:_99 0
+  chr1    533219  534114  CpG:_94 0
+  chr1    544738  546649  CpG:_171    0
+  chr1    713984  714547  CpG:_60 1
+  chr1    762416  763445  CpG:_115    10
+  chr1    788863  789211  CpG:_28 9
+#+END_SRC
+
+**** Find features that DO NOT overlap
+     :PROPERTIES:
+     :CUSTOM_ID: find-features-that-do-not-overlap
+     :END:
+
+Often we want to identify those features in our A file that *do not*
+overlap features in the B file. The =-v= option is your friend in this
+case
+
+#+BEGIN_SRC sh
+  bedtools intersect -a cpg.bed -b exons.bed -v \
+      | head
+  chr1    437151  438164  CpG:_84
+  chr1    449273  450544  CpG:_99
+  chr1    533219  534114  CpG:_94
+  chr1    544738  546649  CpG:_171
+  chr1    801975  802338  CpG:_24
+  chr1    805198  805628  CpG:_50
+  chr1    839694  840619  CpG:_83
+  chr1    844299  845883  CpG:_153
+  chr1    912869  913153  CpG:_28
+  chr1    919726  919927  CpG:_15
+#+END_SRC
+
+**** Require a minimal fraction of overlap
+     :PROPERTIES:
+     :CUSTOM_ID: require-a-minimal-fraction-of-overlap
+     :END:
+
+Recall that the default is to report overlaps between features in A and
+B so long as /at least one basepair/ of overlap exists. However, the
+=-f= option allows you to specify what fraction of each feature in A
+should be overlapped by a feature in B before it is reported
+
+Let's be more strict and require 50% of overlap
+
+#+BEGIN_SRC sh
+  bedtools intersect -a cpg.bed -b exons.bed \
+	   -wo -f 0.50 \
+      | head
+  chr1    135124  135563  CpG:_30 chr1    134772  139696  NR_039983_exon_0_0_chr1_134773_r    0       439
+  chr1    327790  328229  CpG:_29 chr1    324438  328581  NR_028322_exon_2_0_chr1_324439_f    0       439
+  chr1    327790  328229  CpG:_29 chr1    324438  328581  NR_028325_exon_2_0_chr1_324439_f    0       439
+  chr1    327790  328229  CpG:_29 chr1    327035  328581  NR_028327_exon_3_0_chr1_327036_f    0       439
+  chr1    788863  789211  CpG:_28 chr1    788770  794826  NR_047519_exon_5_0_chr1_788771_f    0       348
+  chr1    788863  789211  CpG:_28 chr1    788770  794826  NR_047521_exon_4_0_chr1_788771_f    0       348
+  chr1    788863  789211  CpG:_28 chr1    788770  794826  NR_047523_exon_3_0_chr1_788771_f    0       348
+  chr1    788863  789211  CpG:_28 chr1    788770  794826  NR_047524_exon_3_0_chr1_788771_f    0       348
+  chr1    788863  789211  CpG:_28 chr1    788770  794826  NR_047525_exon_4_0_chr1_788771_f    0       348
+  chr1    788863  789211  CpG:_28 chr1    788858  794826  NR_047520_exon_6_0_chr1_788859_f    0       348
+#+END_SRC
+
+**** Faster analysis via sorted data
+     :PROPERTIES:
+     :CUSTOM_ID: faster-analysis-via-sorted-data
+     :END:
+
+So far the examples presented have used the traditional algorithm in
+bedtools for finding intersections. It turns out, however, that bedtools
+is much faster when using presorted data
+
+For example, compare the difference in speed between the two approaches
+when finding intersections between =exons.bed= and =hesc.chromHmm.bed=:
+
+#+BEGIN_SRC sh
+  time bedtools intersect -a gwas.bed -b hesc.chromHmm.bed > /dev/null
+  1.10s user 0.11s system 99% cpu 1.206 total
+
+  time bedtools intersect -a gwas.bed -b hesc.chromHmm.bed -sorted > /dev/null
+  0.36s user 0.01s system 99% cpu 0.368 total
+#+END_SRC
+
+NOTE: While the run times in this example are quite small, the
+performance gains from using the =-sorted= option groqw as datasets grow
+larger. For example, compare the runtimes of the sorted and unsorted
+approaches as a function of dataset size in the figure below. The
+important thing to remember is that each dataset must be sorted by
+chromosome and then by start position: =sort -k1,1 -k2,2n=
+
+| [[./00Data/T10_GenesGFilesGBrowsers/02_speed-comparo.png]] |
+
+**** Intersecting multiple files at once
+     :PROPERTIES:
+     :CUSTOM_ID: intersecting-multiple-files-at-once
+     :END:
+
+As of version 2.21.0, bedtools is able to intersect an “A” file against
+one or more “B” files. This greatly simplifies analyses involving
+multiple datasets relevant to a given experiment. For example, let's
+intersect exons with CpG islands, GWAS SNPs, an the ChromHMM
+annotations
+
+#+BEGIN_SRC sh
+  bedtools intersect -a exons.bed -b cpg.bed gwas.bed hesc.chromHmm.bed -sorted | head
+  chr1    11873   11937   NR_046018_exon_0_0_chr1_11874_f 0   +
+  chr1    11937   12137   NR_046018_exon_0_0_chr1_11874_f 0   +
+  chr1    12137   12227   NR_046018_exon_0_0_chr1_11874_f 0   +
+  chr1    12612   12721   NR_046018_exon_1_0_chr1_12613_f 0   +
+  chr1    13220   14137   NR_046018_exon_2_0_chr1_13221_f 0   +
+  chr1    14137   14409   NR_046018_exon_2_0_chr1_13221_f 0   +
+  chr1    14361   14829   NR_024540_exon_0_0_chr1_14362_r 0   -
+  chr1    14969   15038   NR_024540_exon_1_0_chr1_14970_r 0   -
+  chr1    15795   15947   NR_024540_exon_2_0_chr1_15796_r 0   -
+  chr1    16606   16765   NR_024540_exon_3_0_chr1_16607_r 0   -
+#+END_SRC
+
+Now by default, this isn't incredibly informative as we can't tell which
+of the three “B” files yielded the intersection with each exon. However,
+if we use the =-wa= and =wb= options, we can see from which file number
+(following the order of the files given on the command line) the
+intersection came. In this case, the 7th column reflects this file
+number.
+
+#+BEGIN_SRC sh
+  bedtools intersect -a exons.bed -b cpg.bed gwas.bed hesc.chromHmm.bed -sorted -wa -wb \
+      | head -10000 \
+      | tail -10
+  chr1    27632676    27635124    NM_001276252_exon_15_0_chr1_27632677_f  0   +   3   chr1    27633213    27635013    5_Strong_Enhancer
+  chr1    27632676    27635124    NM_001276252_exon_15_0_chr1_27632677_f  0   +   3   chr1    27635013    27635413    7_Weak_Enhancer
+  chr1    27632676    27635124    NM_015023_exon_15_0_chr1_27632677_f 0   +   3   chr1    27632613    27632813    6_Weak_Enhancer
+  chr1    27632676    27635124    NM_015023_exon_15_0_chr1_27632677_f 0   +   3   chr1    27632813    27633213    7_Weak_Enhancer
+  chr1    27632676    27635124    NM_015023_exon_15_0_chr1_27632677_f 0   +   3   chr1    27633213    27635013    5_Strong_Enhancer
+  chr1    27632676    27635124    NM_015023_exon_15_0_chr1_27632677_f 0   +   3   chr1    27635013    27635413    7_Weak_Enhancer
+  chr1    27648635    27648882    NM_032125_exon_0_0_chr1_27648636_f  0   +   1   chr1    27648453    27649006    CpG:_63
+  chr1    27648635    27648882    NM_032125_exon_0_0_chr1_27648636_f  0   +   3   chr1    27648613    27649413    1_Active_Promoter
+  chr1    27648635    27648882    NR_037576_exon_0_0_chr1_27648636_f  0   +   1   chr1    27648453    27649006    CpG:_63
+  chr1    27648635    27648882    NR_037576_exon_0_0_chr1_27648636_f  0   +   3   chr1    27648613    27649413    1_Active_Promoter
+#+END_SRC
+
+Additionally, one can use file “labels” instead of file numbers to
+facilitate interpretation, especially when there are /many/ files
+involved
+
+#+BEGIN_SRC sh
+  bedtools intersect -a exons.bed -b cpg.bed gwas.bed hesc.chromHmm.bed -sorted -wa -wb -names cpg gwas chromhmm \
+      | head -10000 \
+      | tail -10
+  chr1    27632676    27635124    NM_001276252_exon_15_0_chr1_27632677_f  0   +   chromhmm    chr1    27633213    27635013    5_Strong_Enhancer
+  chr1    27632676    27635124    NM_001276252_exon_15_0_chr1_27632677_f  0   +   chromhmm    chr1    27635013    27635413    7_Weak_Enhancer
+  chr1    27632676    27635124    NM_015023_exon_15_0_chr1_27632677_f 0   +   chromhmm    chr1    27632613    27632813    6_Weak_Enhancer
+  chr1    27632676    27635124    NM_015023_exon_15_0_chr1_27632677_f 0   +   chromhmm    chr1    27632813    27633213    7_Weak_Enhancer
+  chr1    27632676    27635124    NM_015023_exon_15_0_chr1_27632677_f 0   +   chromhmm    chr1    27633213    27635013    5_Strong_Enhancer
+  chr1    27632676    27635124    NM_015023_exon_15_0_chr1_27632677_f 0   +   chromhmm    chr1    27635013    27635413    7_Weak_Enhancer
+  chr1    27648635    27648882    NM_032125_exon_0_0_chr1_27648636_f  0   +   cpg chr1    27648453    27649006    CpG:_63
+  chr1    27648635    27648882    NM_032125_exon_0_0_chr1_27648636_f  0   +   chromhmm    chr1    27648613    27649413    1_Active_Promoter
+  chr1    27648635    27648882    NR_037576_exon_0_0_chr1_27648636_f  0   +   cpg chr1    27648453    27649006    CpG:_63
+  chr1    27648635    27648882    NR_037576_exon_0_0_chr1_27648636_f  0   +   chromhmm    chr1    27648613    27649413    1_Active_Promoter
+#+END_SRC
+
+*** bedtools “merge”
+    :PROPERTIES:
+    :CUSTOM_ID: bedtools-merge
+    :END:
+
+Many datasets of genomic features have many individual features that
+overlap one another (e.g. aligments from a ChiP seq experiment). It is
+often useful to just cobine the overlapping into a single, contiguous
+interval. The bedtools =merge= command will do this for you
+
+| [[./00Data/T10_GenesGFilesGBrowsers/03_merge-glyph.png]] |
+
+**** Input must be sorted
+     :PROPERTIES:
+     :CUSTOM_ID: input-must-be-sorted
+     :END:
+
+The merge tool requires that the input file is sorted by chromosome,
+then by start position. This allows the merging algorithm to work very
+quickly without requiring any RAM
+
+If your files are unsorted, the =merge= tool will raise an error. To
+correct this, you need to sort your BED using the UNIX =sort= utility
+
+For example:
+
+#+BEGIN_SRC sh
+  sort -k1,1 -k2,2n foo.bed > foo.sort.bed
+#+END_SRC
+
+**** Merge intervals
+     :PROPERTIES:
+     :CUSTOM_ID: merge-intervals
+     :END:
+
+Merging results in a new set of intervals representing the merged set
+of intervals in the input. That is, if a base pair in the genome is
+covered by 10 features, it will now only be represented once in the
+output file
+
+#+BEGIN_SRC sh
+  bedtools merge -i exons.bed | head -n 20
+  chr1    11873   12227
+  chr1    12612   12721
+  chr1    13220   14829
+  chr1    14969   15038
+  chr1    15795   15947
+  chr1    16606   16765
+  chr1    16857   17055
+  chr1    17232   17368
+  chr1    17605   17742
+  chr1    17914   18061
+  chr1    18267   18366
+  chr1    24737   24891
+  chr1    29320   29370
+  chr1    34610   35174
+  chr1    35276   35481
+  chr1    35720   36081
+  chr1    69090   70008
+  chr1    134772  139696
+  chr1    139789  139847
+  chr1    140074  140566
+#+END_SRC
+
+**** Count the number of overlapping intervals
+     :PROPERTIES:
+     :CUSTOM_ID: count-the-number-of-overlapping-intervals
+     :END:
+
+A more sophisticated approach would be to not only merge overlapping
+intervals, but also report the /number/ of intervals that were
+integrated into the new, merged interval. One does this with the =-c=
+and =-o= options. The =-c= option allows one to specify a column or
+columns in the input that you wish to summarize. The =-o= option
+defines the operation(s) that you wish to apply to each column listed
+for the =-c= option. For example, to count the number of overlapping
+intervals that led to each of the new “merged” intervals, one will
+“count” the first column (though the second, third, fourth, etc. would
+work just fine as well)
+
+#+BEGIN_SRC sh
+  bedtools merge -i exons.bed -c 1 -o count | head -n 20
+  chr1    11873   12227   1
+  chr1    12612   12721   1
+  chr1    13220   14829   2
+  chr1    14969   15038   1
+  chr1    15795   15947   1
+  chr1    16606   16765   1
+  chr1    16857   17055   1
+  chr1    17232   17368   1
+  chr1    17605   17742   1
+  chr1    17914   18061   1
+  chr1    18267   18366   1
+  chr1    24737   24891   1
+  chr1    29320   29370   1
+  chr1    34610   35174   2
+  chr1    35276   35481   2
+  chr1    35720   36081   2
+  chr1    69090   70008   1
+  chr1    134772  139696  1
+  chr1    139789  139847  1
+  chr1    140074  140566  1
+#+END_SRC
+
+**** Merging features that are close to one another
+     :PROPERTIES:
+     :CUSTOM_ID: merging-features-that-are-close-to-one-another
+     :END:
+
+With the =-d= (distance) option, one can also merge intervals that do
+not overlap, yet are close to one another. For example, to merge
+features that are no more than 1000bp apart, one would run:
+
+#+BEGIN_SRC sh
+  bedtools merge -i exons.bed -d 1000 -c 1 -o count | head -20
+  chr1    11873   18366   12
+  chr1    24737   24891   1
+  chr1    29320   29370   1
+  chr1    34610   36081   6
+  chr1    69090   70008   1
+  chr1    134772  140566  3
+  chr1    323891  328581  10
+  chr1    367658  368597  3
+  chr1    621095  622034  3
+  chr1    661138  665731  3
+  chr1    700244  700627  1
+  chr1    701708  701767  1
+  chr1    703927  705092  2
+  chr1    708355  708487  1
+  chr1    709550  709660  1
+  chr1    713663  714068  1
+  chr1    752750  755214  2
+  chr1    761585  763229  10
+  chr1    764382  764484  9
+  chr1    776579  778984  1
+#+END_SRC
+
+**** Listing the name of each of the exons that were merged
+     :PROPERTIES:
+     :CUSTOM_ID: listing-the-name-of-each-of-the-exons-that-were-merged
+     :END:
+
+Many times you want to keep track of the details of exactly which
+intervals were merged. One way to do this is to create a list of the
+names of each feature. We can do with with the =collapse= operation
+available via the =-o= argument. The name of the exon is in the fourth
+column, so we ask =merge= to create a list of the exon names with =-c
+4 -o collapse=:
+
+#+BEGIN_SRC sh
+  bedtools merge -i exons.bed -d 90 -c 1,4 -o count,collapse | head -20
+  chr1    11873   12227   1   NR_046018_exon_0_0_chr1_11874_f
+  chr1    12612   12721   1   NR_046018_exon_1_0_chr1_12613_f
+  chr1    13220   14829   2   NR_046018_exon_2_0_chr1_13221_f,NR_024540_exon_0_0_chr1_14362_r
+  chr1    14969   15038   1   NR_024540_exon_1_0_chr1_14970_r
+  chr1    15795   15947   1   NR_024540_exon_2_0_chr1_15796_r
+  chr1    16606   16765   1   NR_024540_exon_3_0_chr1_16607_r
+  chr1    16857   17055   1   NR_024540_exon_4_0_chr1_16858_r
+  chr1    17232   17368   1   NR_024540_exon_5_0_chr1_17233_r
+  chr1    17605   17742   1   NR_024540_exon_6_0_chr1_17606_r
+  chr1    17914   18061   1   NR_024540_exon_7_0_chr1_17915_r
+  chr1    18267   18366   1   NR_024540_exon_8_0_chr1_18268_r
+  chr1    24737   24891   1   NR_024540_exon_9_0_chr1_24738_r
+  chr1    29320   29370   1   NR_024540_exon_10_0_chr1_29321_r
+  chr1    34610   35174   2   NR_026818_exon_0_0_chr1_34611_r,NR_026820_exon_0_0_chr1_34611_r
+  chr1    35276   35481   2   NR_026818_exon_1_0_chr1_35277_r,NR_026820_exon_1_0_chr1_35277_r
+  chr1    35720   36081   2   NR_026818_exon_2_0_chr1_35721_r,NR_026820_exon_2_0_chr1_35721_r
+  chr1    69090   70008   1   NM_001005484_exon_0_0_chr1_69091_f
+  chr1    134772  139696  1   NR_039983_exon_0_0_chr1_134773_r
+  chr1    139789  139847  1   NR_039983_exon_1_0_chr1_139790_r
+  chr1    140074  140566  1   NR_039983_exon_2_0_chr1_140075_r
+#+END_SRC
+
+*** bedtools “complement”
+    :PROPERTIES:
+    :CUSTOM_ID: bedtools-complement
+    :END:
+
+We often want to know which intervals of the genome are *NOT*
+“covered” by intervals in a given feature file. For example, if you
+have a set of ChIP-seq peaks, you may also want to know which regions
+of the genome are not bound by the factor you assayed. The
+=complement= addresses this task
+
+| [[./00Data/T10_GenesGFilesGBrowsers/04_complement-glyph.png]] |
+
+As an example, let's find all of the non-exonic (i.e., intronic or
+intergenic) regions of the genome. Note, to do this you need a
+[[http://bedtools.readthedocs.org/en/latest/content/general-usage.html#genome-file-format][“genome”]] file, which tells =bedtools= the length of each chromosome in
+your file.  /Consider why the tool would need this information.../
+
+#+BEGIN_SRC sh
+  bedtools complement -i exons.bed -g genome.txt \
+	   > non-exonic.bed
+  head non-exonic.bed
+  chr1    0   11873
+  chr1    12227   12612
+  chr1    12721   13220
+  chr1    14829   14969
+  chr1    15038   15795
+  chr1    15947   16606
+  chr1    16765   16857
+  chr1    17055   17232
+  chr1    17368   17605
+  chr1    17742   17914
+#+END_SRC
+
+*** bedtools “genomecov”
+    :PROPERTIES:
+    :CUSTOM_ID: bedtools-genomecov
+    :END:
+
+For many analyses, one wants to measure the genome wide coverage of a
+feature file. For example, we often want to know what fraction of the
+genome is covered by 1 feature, 2 features, 3 features, etc. This is
+frequently crucial when assessing the “uniformity” of coverage from
+whole-genome sequencing. This is done with the versatile =genomecov=
+tool
+
+| [[./00Data/T10_GenesGFilesGBrowsers/05_genomecov-glyph.png]] |
+
+As an example, let's produce a histogram of coverage of the exons
+throughout the genome. Like the =merge= tool, =genomecov= requires
+pre-sorted data. It also needs a genome file as above
+
+#+BEGIN_SRC sh
+  bedtools genomecov -i exons.bed -g genome.txt
+#+END_SRC
+
+This should run for 3 minutes or so. At the end of your output, you
+should see something like:
+
+#+BEGIN_SRC sh
+  genome  0   3062406951  3137161264  0.976171
+  genome  1   44120515    3137161264  0.0140638
+  genome  2   15076446    3137161264  0.00480576
+  genome  3   7294047 3137161264  0.00232505
+  genome  4   3650324 3137161264  0.00116358
+  genome  5   1926397 3137161264  0.000614057
+  genome  6   1182623 3137161264  0.000376972
+  genome  7   574102  3137161264  0.000183
+  genome  8   353352  3137161264  0.000112634
+  genome  9   152653  3137161264  4.86596e-05
+  genome  10  113362  3137161264  3.61352e-05
+  genome  11  57361   3137161264  1.82844e-05
+  genome  12  52000   3137161264  1.65755e-05
+  genome  13  55368   3137161264  1.76491e-05
+  genome  14  19218   3137161264  6.12592e-06
+  genome  15  19369   3137161264  6.17405e-06
+  genome  16  26651   3137161264  8.49526e-06
+  genome  17  9942    3137161264  3.16911e-06
+  genome  18  13442   3137161264  4.28477e-06
+  genome  19  1030    3137161264  3.28322e-07
+  genome  20  6329    3137161264  2.01743e-06
+  ...
+#+END_SRC
+
+**** Producing BEDGRAPH output
+     :PROPERTIES:
+     :CUSTOM_ID: producing-bedgraph-output
+     :END:
+
+Using the =-bg= option, one can also produce BEDGRAPH output which
+represents the “depth” fo feature coverage for each base pair in the
+genome:
+
+#+BEGIN_SRC sh
+  bedtools genomecov -i exons.bed -g genome.txt -bg | head -20
+  chr1    11873   12227   1
+  chr1    12612   12721   1
+  chr1    13220   14361   1
+  chr1    14361   14409   2
+  chr1    14409   14829   1
+  chr1    14969   15038   1
+  chr1    15795   15947   1
+  chr1    16606   16765   1
+  chr1    16857   17055   1
+  chr1    17232   17368   1
+  chr1    17605   17742   1
+  chr1    17914   18061   1
+  chr1    18267   18366   1
+  chr1    24737   24891   1
+  chr1    29320   29370   1
+  chr1    34610   35174   2
+  chr1    35276   35481   2
+  chr1    35720   36081   2
+  chr1    69090   70008   1
+  chr1    134772  139696  1
+#+END_SRC
+
+# ** *PICARD Tools*
+# *** [[https://broadinstitute.github.io/picard/index.html][Picard]]
+# *** [[https://broadinstitute.github.io/picard/command-line-overview.html#Overview][Detailed Documentation]]
+
+** *Important BEDTools*
+
+| *Tool Name* | *Usage*                                                                              |
+| [[https://bedtools.readthedocs.io/en/latest/content/tools/bamtobed.html][bamtobed]]    | bedtools bamtobed [OPTIONS] -i <BAM>                                                 |
+|             | bamToBed [OPTIONS] -i <BAM>                                                          |
+| [[https://bedtools.readthedocs.io/en/latest/content/tools/bamtofastq.html][bamtofastq]]  | bedtools bamtofastq [OPTIONS] -i <BAM> -fq <FASTQ>                                   |
+|             | bamToFastq [OPTIONS] -i <BAM> -fq <FASTQ>                                            |
+| [[https://bedtools.readthedocs.io/en/latest/content/tools/cluster.html][cluster]]     | bedtools cluster [OPTIONS] -i <BED/GFF/VCF>                                          |
+|             | clusterBed [OPTIONS] -i <BED/GFF/VCF>                                                |
+| [[https://bedtools.readthedocs.io/en/latest/content/tools/complement.html][complement]]  | bedtools complement -i <BED/GFF/VCF> -g <GENOME>                                     |
+|             | complementBed -i <BED/GFF/VCF> -g <GENOME>                                           |
+| [[https://bedtools.readthedocs.io/en/latest/content/tools/coverage.html][coverage]]    | bedtools coverage [OPTIONS] -a <FILE> \                                              |
+|             | coverageBed [OPTIONS] -a <FILE> \                                                    |
+|             | -b <FILE1, FILE2, ..., FILEN>                                                        |
+| [[https://bedtools.readthedocs.io/en/latest/content/tools/flank.html][flank]]       | bedtools flank [OPTIONS] -i <BED/GFF/VCF> -g <GENOME> [-b or (-l and -r)]            |
+|             | flankBed [OPTIONS] -i <BED/GFF/VCF> -g <GENOME> [-b or (-l and -r)]                  |
+| [[https://bedtools.readthedocs.io/en/latest/content/tools/fisher.html][fisher]]      | bedtools fisher [OPTIONS] -a <BED/GFF/VCF> -b <BED/GFF/VCF> -g <genome>              |
+| [[https://bedtools.readthedocs.io/en/latest/content/tools/genomecov.html][genomecov]]   | bedtools genomecov [OPTIONS] [-i or -ibam] -g (iff. -i)                              |
+|             | genomeCoverageBed [OPTIONS] [-i or -ibam] -g (iff. -i)                               |
+| [[https://bedtools.readthedocs.io/en/latest/content/tools/getfasta.html][getfasta]]    | bedtools getfasta [OPTIONS] -fi <input FASTA> -bed <BED/GFF/VCF>                     |
+|             | getFastaFromBed [OPTIONS] -fi <input FASTA> -bed <BED/GFF/VCF>                       |
+| [[https://bedtools.readthedocs.io/en/latest/content/tools/intersect.html][intersect]]   | bedtools intersect [OPTIONS] -a <FILE> \                                             |
+|             | -b <FILE1, FILE2, ..., FILEN>                                                        |
+|             | intersectBed [OPTIONS] -a <FILE> \                                                   |
+|             | -b <FILE1, FILE2, ..., FILEN>                                                        |
+| [[https://bedtools.readthedocs.io/en/latest/content/tools/jaccard.html][jaccard]]     | bedtools jaccard [OPTIONS] -a <BED/GFF/VCF> -b <BED/GFF/VCF>                         |
+| [[https://bedtools.readthedocs.io/en/latest/content/tools/links.html][links]]       | linksBed [OPTIONS] -i <BED/GFF/VCF> > <HTML file>                                    |
+| [[https://bedtools.readthedocs.io/en/latest/content/tools/map.html][map]]         | bedtools map [OPTIONS] -a <bed/gff/vcf> -b <bed/gff/vcf>                             |
+|             | mapBed [OPTIONS] -a <bed/gff/vcf> -b <bed/gff/vcf>                                   |
+| [[https://bedtools.readthedocs.io/en/latest/content/tools/maskfasta.html][maskfasta]]   | bedtools maskfasta [OPTIONS] -fi <input FASTA> -bed <BED/GFF/VCF> -fo <output FASTA> |
+|             | maskFastaFromBed [OPTIONS] -fi <input FASTA> -bed <BED/GFF/VCF> -fo <output FASTA>   |
+| [[https://bedtools.readthedocs.io/en/latest/content/tools/merge.html][merge]]       | bedtools merge [OPTIONS] -i <BED/GFF/VCF/BAM>                                        |
+|             | mergeBed [OPTIONS] -i <BED/GFF/VCF/BAM>                                              |
+| [[https://bedtools.readthedocs.io/en/latest/content/tools/multicov.html][multicov]]    | bedtools multicov [OPTIONS] -bams BAM1 BAM2 BAM3 ... BAMn -bed  <BED/GFF/VCF>        |
+|             | multiBamCov [OPTIONS] -bams BAM1 BAM2 BAM3 ... BAMn -bed  <BED/GFF/VCF>              |
+| [[https://bedtools.readthedocs.io/en/latest/content/tools/overlap.html][overlap]]     | overlap [OPTIONS] -i <input> -cols s1,e1,s2,e2                                       |
+| [[https://bedtools.readthedocs.io/en/latest/content/tools/pairtopair.html][pairtopair]]  | pairToPair [OPTIONS] -a <BEDPE> -b <BEDPE>                                           |
+| [[https://bedtools.readthedocs.io/en/latest/content/tools/random.html][random]]      | bedtools random [OPTIONS] -g <GENOME>                                                |
+|             | randomBed [OPTIONS] -g <GENOME>                                                      |
+| [[https://bedtools.readthedocs.io/en/latest/content/tools/reldist.html][reldist]]     | bedtools reldist [OPTIONS] -a <BED/GFF/VCF> -b <BED/GFF/VCF>                         |
+| [[https://bedtools.readthedocs.io/en/latest/content/tools/slop.html][slop]]        | bedtools slop [OPTIONS] -i <BED/GFF/VCF> -g <GENOME> [-b or (-l and -r)]             |
+|             | slopBed [OPTIONS] -i <BED/GFF/VCF> -g <GENOME> [-b or (-l and -r)]                   |
+| [[https://bedtools.readthedocs.io/en/latest/content/tools/subtract.html][subtract]]    | bedtools subtract [OPTIONS] -a <BED/GFF/VCF> -b <BED/GFF/VCF>                        |
+|             | subtractBed [OPTIONS] -a <BED/GFF/VCF> -b <BED/GFF/VCF>                              |
+| [[https://bedtools.readthedocs.io/en/latest/content/tools/window.html][window]]      | bedtools window [OPTIONS] [-a or -abam] -b <BED/GFF/VCF>                             |
+
+** *Configuring Sharing Between Multipass Virtual Machine and Your Host Machine*
+
++ In your Home machine (Not inside Multipass):
+  + Make sure your VM is up and running
+
+  #+BEGIN_EXAMPLE
+  multipass list
+  #+END_EXAMPLE
+
+  + You should see something like this:
+
+    #+BEGIN_EXAMPLE
+    Name                    State             IPv4             Image
+    primary                 Running           192.168.64.3     Ubuntu 20.04 LTS
+    #+END_EXAMPLE
+
++ To share a directory between the host and your VM, it has to be mounted
+
++ First, make sure you generate the directory in the host machine that will be shared between your VM and the host machine
+
+  #+BEGIN_EXAMPLE
+  mkdir /Users/raramayo/Shared
+  #+END_EXAMPLE
+
++ To mount this to the VM, issue the command (Not inside Multipass):
+
+  #+BEGIN_EXAMPLE
+  multipass mount /Users/raramayo/Shared primary
+  --------------  ---------------------- -------
+  ^command        ^PATH to directory     ^VM name
+  #+END_EXAMPLE
+
++ Test that the mount command worked (Not inside Multipass):
+
+  #+BEGIN_EXAMPLE
+  multipass info primary
+  -------------- -------
+  ^command       ^VM name
+  #+END_EXAMPLE
+
+  + You should see something like this:
+
+    #+BEGIN_EXAMPLE
+    Name:           primary
+    State:          Running
+    IPv4:           192.168.64.3
+    Release:        Ubuntu 20.04.2 LTS
+    Image hash:     9dd5cb9f73c4 (Ubuntu 20.04 LTS)
+    Load:           0.11 0.08 0.07
+    Disk usage:     2.1G out of 4.7G
+    Memory usage:   132.4M out of 981.3M
+    Mounts:         /Users/raramayo/Shared => /Users/raramayo/Shared
+    UID map: 501:default
+    GID map: 20:default
+    #+END_EXAMPLE
+
++ Now go directly to the Multipass terminal that is open, or if
+  Multipass is not working, on a different terminal tab, issue the
+  command:
+
+  #+BEGIN_EXAMPLE
+  multipass shell primary
+  --------------  -------
+  ^command        ^VM name
+  #+END_EXAMPLE
+
++ Once the VM is running (if it was not running before), inside the VM, go to the mounted directory:
+
+  #+BEGIN_EXAMPLE
+  cd /Users/raramayo/Shared/
+  #+END_EXAMPLE
+
++ From there ~scp~ the files from the server to your local computer
+
++ Issue the following commands on your local VM machine
+
+  #+BEGIN_EXAMPLE
+  # EXAMPLE
+  rsync -va Username@129.114.17.139:/vol_b/DB0000/Database/CHECKSUMS .
+  rsync -va Username@129.114.17.139:/vol_b/DB0000/Database/T10_Data .
+  #+END_EXAMPLE
+
++ To unmount the mounted VM, issue the command:
+
+  #+BEGIN_EXAMPLE
+  multipass unmount /Users/raramayo/Shared primary
+  #+END_EXAMPLE
+
++ To test that the unmount command worked:
+
+  #+BEGIN_EXAMPLE
+  multipass info primary
+  #+END_EXAMPLE
+
+  + You should see something like this:
+
+    #+BEGIN_EXAMPLE
+    Name:           primary
+    State:          Running
+    IPv4:           192.168.64.3
+    Release:        Ubuntu 20.04.2 LTS
+    Image hash:     9dd5cb9f73c4 (Ubuntu 20.04 LTS)
+    Load:           0.11 0.08 0.07
+    Disk usage:     2.1G out of 4.7G
+    Memory usage:   132.4M out of 981.3M
+    #+END_EXAMPLE
+
++ The local volume will remain but it will not longer be accessible to the VM
+* 
+| *Navigation:*             | *[[https://github.tamu.edu/DigitalBiology/BIOL647_Digital_Biology_2021_Summer/wiki][Home]]*                                                                       |
+| *Author: [[raramayo@tamu.edu][Rodolfo Aramayo]]* | *License: [[http://creativecommons.org/licenses/by-nc-sa/4.0/][All content produced in this site is licensed by: CC BY-NC-SA 4.0]]* |

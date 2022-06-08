@@ -1,0 +1,90 @@
+# #+TITLE: Digital Biology
+#+AUTHOR: Rodolfo Aramayo
+#+EMAIL: raramayo@tamu.edu
+#+STARTUP: align
+* *Introduction to Org-Mode*
+** *Preparing emacs for Org-Mode*
++ cd to your new work directory
+  #+BEGIN_SRC sh
+    cd /vol_b/DB00xx/Database
+    cp -vR /vol_b/zzStorage/T14_Advanced_Emacs .
+    cp -vR /vol_b/zzStorage/T15_Org_Mode . 
+    cd d /vol_b/DB00xx/Database/T15_Org_Mode
+  #+END_SRC
++ Let's Open and close emacs, observe emacs startup behavior
+  #+BEGIN_SRC sh
+    emacs
+    Quit emacs
+  #+END_SRC
++ Copy the following file:
+  #+BEGIN_SRC sh
+    cp -v /vol_b/zzStorage/T15_Org_Mode/.emacs ~/
+    emacs
+  #+END_SRC
++ Compare what happened
++ Open the ~.emacs~ file you copied
+  : emacs /vol_b/DB00xx/.emacs
++ Let's look at the code in this file
++ Save the file and Restart emacs
++ Go to your repo
++ Open "*README.org*" with emacs
+  : emacs README.org
++ Add the following to the file:
+  : #+TITLE: Digital Biology
+  : #+AUTHOR: Your Name
+  : #+EMAIL: Your Email
+  : #+STARTUP: align
+  : #+STARTUP: showall
++ Save the *README.org* file
++ Inside the *README.org*, add the following:
+  #+BEGIN_SRC
+  * Welcome to Org mode
+
+    Welcome, and thanks for trying out Org mode. Making outlines in
+    Org is very simple. It is just text! Just start typing.
+  * This is a headline, it starts with one or more stars
+   A heading has one star, a sub-heading two, etc.
+  * Working with lists
+  ** Moving around in our outline
+  ** Moving around headlines
+  #+END_SRC
++ Save the file (*C-x C-s*). You will notice that the colors change,
+  syntax highlighting is turned on, and Emacs understands you are
+  working in Org mode
++ *Working with lists* Add the following:
+  #+BEGIN_SRC
+  ** Lord of the Rings
+     My favorite scenes are (in this order)
+     1. The attack of the Rohirrim
+     2. Eowyn's fight with the witch king
+        + this was already my favorite scene in the book
+        + I really like Miranda Otto.
+     3. Peter Jackson being shot by Legolas
+         - on DVD only
+        He makes a really funny face when it happens.
+     But in the end, no individual scenes matter but the film as a whole.
+     Important actors in this film are:
+     - Elijah Wood :: He plays Frodo
+     - Sean Austin :: He plays Sam, Frodo's friend.  I still remember
+       him very well from his role as Mikey Walsh in The Goonies.
+  #+END_SRC
++ *Working with notes* You can use the following markup:
+ #+BEGIN_SRC
+ You can make words *bold*, /italic/, _underlined_, =code= and =verbatim=, and, if you must, +strike-through+
+ #+END_SRC
++ Save the file
++ Make sure to commit all changes
+** *Manual and Tutorials*
+  + [[https://www.gnu.org/software/emacs/refcards/pdf/orgcard.pdf][Org-Mode-Ref-Card]]
+  + [[http://orgmode.org/manual/][Org-Mode Manual]]
+  + [[https://youtu.be/bzZ09dAbLEE][Taking Notes In Emacs Org-Mode]] <--YouTube Video
+  + [[https://youtu.be/CGnt_PWoM5Y][Org-mode for Reproducible Research]] <--YouTube Video
+** *Advanced Org-mode*
++ Follow my instructions
+  + Adding tables
+  + Adding pictures
+  + generating latex and pdf documents
++ For this class, I would like you to start taking notes in the: *README.org* file
+* 
+| *Navigation:*             | *[[https://github.tamu.edu/DigitalBiology/BIOL647_Digital_Biology_2021_Summer/wiki][Home]]*                                                                       |
+| *Author: [[raramayo@tamu.edu][Rodolfo Aramayo]]* | *License: [[http://creativecommons.org/licenses/by-nc-sa/4.0/][All content produced in this site is licensed by: CC BY-NC-SA 4.0]]* |

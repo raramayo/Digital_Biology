@@ -1,0 +1,175 @@
+# #+TITLE: Digital Biology
+#+AUTHOR: Rodolfo Aramayo
+#+EMAIL: raramayo@tamu.edu
+#+STARTUP: align
+* *SSH: SecureSHell*
++ Secure Shell is a cryptographic network protocol for secure data communication, remote
+  command-line login, remote command execution, and other secure network services between two
+  networked computers [[http://en.wikipedia.org/wiki/Secure_Shell][Source: Wikipedia]]
++ Most SSH connections are driven by [[http://www.openssh.com/][OpenSSH]]
++ Process:
+  | [[./00Data/T01_SSH101/01.png]] |
+------------
+* *About Using SSH Keys*
++ Why should we use SSH keys?
+  + More secure than password access
+    + It is easy to mistype a password
+    + People will tend to use _short_ passwords
+    + _Short_ passwords can be guessed easily by _brute force attacks_
+    + This results increases the vulnerability of the machine
+    + Cryptography comes to the rescue...
+      | [[./00Data/T01_SSH101/02.jpg]] |
++ Fundamentals of Cryptography
+  + User01 generates:
+    + A ~Private Key (Privatekey01)~ and a ~Public Key (Publickey01.pub)~
+  + User02 generates:
+    + A ~Private Key (Privatekey02)~ and a ~Public Key (Publickey02.pub)~
+  + Now, user01 can encrypt a message to user02 using
+    ~Publickey02.pub~ key. This message can only be decrypted by
+    user02
+  + Similarly, user02 could encrypt a message to user01 using
+    ~Publickey01.pub~ key. This message can only be decrypted by
+    user01
+  + *Key Concept - Key Pair:* Public Key and Private Key
+  + For communication between computers, server holds the public key, you keep the private key
+  + One Key versus Many Keys, considerations
++ Process:
+  | [[./00Data/T01_SSH101/03.png]] |
+# *SSH Basics*
+#   + *[[http://www.lynda.com/Developer-Network-Administration-tutorials/What-SSH/189066/365614-4.html][SSH]]*
+#   + *[[http://www.lynda.com/Developer-Network-Administration-tutorials/Connecting-SSH-server-from-Mac-OS-X-Linux/189066/365616-4.html][Connecting to an SSH server from Mac OS X or Linux]]*
+# + *Using SSH Keys*
+#   + *[[http://www.lynda.com/Developer-Network-Administration-tutorials/Using-key-more-secure-access/189066/365618-4.html][Using a key for more-secure access]]*
+#   + *[[http://www.lynda.com/Developer-Network-Administration-tutorials/Generating-key-pair-Mac-OS-X-Linux/189066/365619-4.html][Generating a key pair on Mac OS X or Linux]]*
+#   + *[[http://www.lynda.com/Developer-Network-Administration-tutorials/Connecting-SSH-server-from-Mac-OS-X-Linux-using-key/189066/365620-4.html][Connecting to an SSH server from Mac OS X and Linux using a key]]*
++ *About The "Man In The Middle" Attack*
+  | [[./00Data/T01_SSH101/04.png]] |
+** *SSH Logic*
+   | [[./00Data/T01_SSH101/05_SSH_Logic.png]] |
+** *SSH Into 129.114.17.139*
+: $ Computer name: "129.114.17.139"
+: $ Username: "YourDigitalBiologyUsername"
+: $ Password: "YourDigitalBiologyPasswd"
+
++ Command:
+  : $ ssh YourDigitalBiologyUsername@129.114.17.139
+
++ The terminal will promt you with something like:
+  : The authenticity of host '129.114.17.139' can't be established.
+  : ECDSA key fingerprint is SHA256:T5RazUMaciQqd70EhpsOXXDPR3VveEbcoC4HtqF4ZgE.
+  : Are you sure you want to continue connecting (yes/no)? 
+
++ Answer ~yes~
+
++ Enter your password
+
++ Once you access the computer:
+  + Verify where you are. This is, get the *Name* for the computer you are located
+    : $ hostname
+    + Brief discussion about the parameters presented by ~ifconfig~
+  + Verify the architecture of the machine:
+    : $ uname -a
+    + Brief discussion about the parameters presented by ~uname~
+** *Generating SSH Keys for your Account in 129.114.17.139*
++ Check if you have SSH keys in your Account
+  + Let's ~cd~ to your HOME directory 
+    : $ cd ~
+  + If you _do not have_ a ~.ssh~ directory, generate one:
+    : $ mkdir .ssh
+  + Make sure your .ssh directory has '700' permissions (i.e., only you can read/write/execute) 
+    : $ chmod 700 .ssh
+  + Let's ~cd~ to your ~.ssh/~ directory
+    : $ cd ~/.ssh
+  + Lists the files in your .ssh directory
+    : $ ls -al
+  + Check the directory listing to see if you have files named either *id_rsa.pub* or *id_dsa.pub*
+    + You should NOT have neither of those files
+    + If you do *delete them*
+      : $ rm *
++ Generate a new SSH key
+  + To generate a new SSH key, copy and paste the text below. The default settings are preferred, so when you're asked to "enter a file in which to
+    save the key," just press enter to continue
+    : $ ssh-keygen -t rsa -b 4096 -f id_rsa -P ''
+    + Where:
+      + ssh-keygen <-Command
+      + -t rsa     <-Encryption protocol
+      + -b 4096    <-Key Size in bytes
+      + -f id_rsa  <-File name
+      + -P ''      <-Password to Unlock the key
+** *SSH Into 129.114.16.133*
+: $ Computer name: "129.114.16.133"
+: $ Username: "YourDigitalBiologyUsername"
+: $ Password: "YourCYVERSEasswd"
+
++ Command:
+  : $ ssh YourDigitalBiologyUsername@129.114.16.133
+
++ The terminal will promt you with something like:
+  : The authenticity of host '129.114.16.133 ' can't be established.
+  : ECDSA key fingerprint is SHA256:WrVEepCgKV7BVbm0Y+A0oEW3JutrYW2EYuiSRd1Kizc.
+  : Are you sure you want to continue connecting (yes/no)?
+
++ Answer ~Yes~
+
++ Enter your password
+** *Generating SSH Keys for your Account in 129.114.16.133*
++ Check if you have SSH keys in your Account
+  + Let's ~cd~ to your HOME directory 
+    : $ cd ~
+  + If you _do not have_ a ~.ssh~ directory, generate one:
+    : $ mkdir .ssh
+  + Make sure your .ssh directory has '700' permissions (i.e., only you can read/write/execute) 
+    : $ chmod 700 .ssh
+  + Let's ~cd~ to your ~.ssh/~ directory
+    : $ cd ~/.ssh
+  + Lists the files in your .ssh directory
+    : $ ls -al
+  + Check the directory listing to see if you have files named either *id_rsa.pub* or *id_dsa.pub*
+    + You should NOT have neither of those files
+    + If you do *delete them*
+      : $ rm *
++ Generate a new SSH key
+  + To generate a new SSH key, copy and paste the text below. The default settings are preferred, so when you're asked to "enter a file in which to
+    save the key," just press enter to continue
+    : $ ssh-keygen -t rsa -b 4096 -f id_rsa -P ''
+    + Where:
+      + ssh-keygen <-Command
+      + -t rsa     <-Encryption protocol
+      + -b 4096    <-Key Size in bytes
+      + -f id_rsa  <-File name
+      + -P ''      <-Password to Unlock the key
++ Transferring keys to a new server (in this case 129.114.17.139)
+  + Secure-Copy Method
+    1. Copy-rename the id_rsa.pub, so as to clearly indicate its origin
+       : $ cp -v id_rsa.pub id_rsa.pub.YourDigitalBiologyUsername.129.114.16.133
+    2. Secure-Copy (scp) the re-named id_rsa.pub file to your 129.114.17.139 account
+       : $ scp ./id_rsa.pub.YourDigitalBiologyUsername.129.114.16.133 YourDigitalBiologyUsername@129.114.17.139:~/.ssh
+** *SSH Into 129.114.17.139*
++ Transferring your 129.114.17.139 keys to a new server (in this case 129.114.16.133)
+  + Secure-Copy Method
+    1. Copy-rename the id_rsa.pub, so as to clearly indicate its origin
+       : $ cp -v id_rsa.pub id_rsa.pub.YourDigitalBiologyUsername.129.114.17.139
+    2. Secure-Copy (scp) the re-named id_rsa.pub file to your 129.114.16.133 account
+       : $ scp ./id_rsa.pub.YourDigitalBiologyUsername.129.114.17.139 YourDigitalBiologyUsername@129.114.16.133:~/.ssh
+** *Adding the respective server keys to the "authorized_keys" File*
++ In 129.114.17.139:
+  : $ cat id_rsa.pub.YourDigitalBiologyUsername.129.114.16.133 > authorized_keys
++ In 129.114.16.133:
+  : $ cat id_rsa.pub.YourDigitalBiologyUsername.129.114.17.1391 > authorized_keys
+** *Testing the connections between 129.114.17.139 and 129.114.16.133 and vice-versa*
++ In 129.114.17.139:
+  : $ ssh YourDigitalBiologyUsername@129.114.16.133
+  + This should allow you to access 129.114.16.133 without typing a password
++ In 129.114.16.133:
+  : $ ssh YourDigitalBiologyUsername@129.114.17.139
+  + This should allow you to access 129.114.17.139 without typing a password
+# ** *Adding keys to github.tamu.edu*
+#   + You need to add the public keys corresponding to the computers you will be using into the GitHub.tamu.edu web site.
+#   + [[https://github.tamu.edu/settings/profile][Go to Settings]]
+#   + [[https://github.tamu.edu/settings/keys][Select Keys]]
+#   + [[https://github.tamu.edu/settings/ssh/new][Add New Key]]
+#   + Copy the ~public~ version of your key, paste the contents and save
+#   + This should allow you to ~push~ to you repository later
+* 
+| *Navigation:*             | *[[https://github.tamu.edu/DigitalBiology/BIOL647_Digital_Biology_2021_Summer/wiki][Home]]*                                                                       |
+| *Author: [[raramayo@tamu.edu][Rodolfo Aramayo]]* | *License: [[http://creativecommons.org/licenses/by-nc-sa/4.0/][All content produced in this site is licensed by: CC BY-NC-SA 4.0]]* |

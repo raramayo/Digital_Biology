@@ -1,0 +1,75 @@
+# #+TITLE: Digital Biology
+#+AUTHOR: Rodolfo Aramayo
+#+EMAIL: raramayo@tamu.edu
+#+STARTUP: align
+* *Introduction 102*
++ Why this course was created?
+  + From Biology to Computers
+    + Relaxed athmosphere
+    + Teach them Unix
+    + Teach them how to manipulate data
+    + From manipulating data to analyzing data
+    + Make them independent of the Graphical User Interface (GUI)
+      | [[./00Data/T00/01.png]] |
+    + The Evolution of Biology and Biological Data makes this essential
+  + The problem with Bioinformaticists or Data Analysts
+    + Few of them have a /true good/ Biological background
+    + Most of them just might not be able to see subtle patterns and miss what is important
+    + This last one is the main motivation of this class
+  + Processing data is no different from doing wet-lab experiments
+    + Good experimental design is essential
+    + You need Controls (i.e., Positive Controls, Negative Controls)
+    + You need to have meaningful Experimental Replicates
+    + Avoid the: *Garbage In, Garbage Out*
+  + This course has *no pre-requisites*
+    + I will assume you know nothing and start at the beggining
+    + I will show you the most efficient ways, I know, to do stuff
+  + This is a *compact* class
+    + You will be exposed to a lot of new knowledge
+    + /Be patient with yourself/
+    + /Drop anything else you are doing/
+    + /Immerse yourself on the class material for these few coming days/
+    + This is the only way to tryly benefit from this class
+    + If you, /in addition to being here/ try to do something else, you will exhaust yourself and learn nothing
+  + My expectations:
+    + We have no exams
+    + Lecture followed by a practical session
+    + Before the following lecture, I recommend you watch the recording of the lecture (if any) and try to re-execute the steps on your own
+    + Questions and problems should be discussed with your TA before the coming lecture 
+    + Each one of you will be assigned a Git Repository that will be shared with me
+    + You should update your Git Repo after each lecture
+      + Deposit there whatever is related to the lecture
+      + Deposit there all the code (scripts) that you will be generating
+      + Your Git Repo will be graded
+    + There is no way to fake things in DigiBio
+      + You either do things or you don't
+    + This class is a *FAST MOVING TARGET*
+    + This class is *very unforgiving* to the possibility of you taking
+      a day off. If you miss one lecture you probably will get very,
+      very far behind and you might not be able to recover...
+    + In an ideal scenario, in the end, we will be analyzing a new dataset
+    + The idea here is for you to leave the class having demonstrated expertise in data analysis
+  + *DISCLAIMER*
+    + We are dealing with computers
+    + When dealing with computers anything can happen
+      + The network can go down (happened in the past)
+      + The machine can crash  
+      + These are things that are beyond my control
+  + Conclusion: This class follows a new paradigm
++ [[https://github.tamu.edu/DigitalBiology/BIOL647_Digital_Biology_2021_Summer/blob/master/00Data/000_BIOL647.pdf][Syllabus and Class Organization]]
++ *Brief Discussion about Bootstrapping*
+  + Definition: Computing a technique of loading a program into a
+    computer by means of a few initial instructions which enable the
+    introduction of the rest of the program from an input device.
+  + Bootstrapping in Biology
+    + Typical examples of bootstrapping in Biology include but are not restricted to /translation/
+      + To produce a /Protein/, you need:
+        : mRNA + Ribosomes + tRNAs + AminoAcids
+        : mRNA = DNA + RNA Polymerase II (Protein)
+        : Ribosomes = RNA + Proteins
+        : RNA = DNA + RNA Polymerase I (Protein)
+        : Proteins = mRNA + Ribosomes + tRNAs + AminoAcids
+  + Bootstrapping in Digital Biology
+*    
+| *Navigation:*             | *[[https://github.tamu.edu/DigitalBiology/BIOL647_Digital_Biology_2021_Summer/wiki][Home]]*                                                                       |
+| *Author: [[raramayo@tamu.edu][Rodolfo Aramayo]]* | *License: [[http://creativecommons.org/licenses/by-nc-sa/4.0/][All content produced in this site is licensed by: CC BY-NC-SA 4.0]]* |
