@@ -1,24 +1,22 @@
-# **DIGITAL BIOLOGY**
+# **Digital Biology**
 
 ------------------------------------------------------------------------
 
 ## **Instructor:**
 
-|                  |                                                     |
-|------------------|-----------------------------------------------------|
-| Name:            | Dr. Rodolfo Aramayo, PhD                            |
-|                  |                                                     |
-| Email address:   | raramayo@tamu.edu                                   |
-| Office hours:    | By appointment                                      |
-| Office location: | Department of Biology                               |
-|                  | Room 412A, Biological Sciences Building West (BSBW) |
-|                  | Texas A&M University                                |
-|                  | College Station, TX 77843-3258                      |
-|                  |                                                     |
+|                |                                                     |
+|----------------|-----------------------------------------------------|
+| Name:          | Dr. Rodolfo Aramayo, PhD                            |
+| Email address: | raramayo@tamu.edu                                   |
+| Location:      | Department of Biology                               |
+|                | Room 412A, Biological Sciences Building West (BSBW) |
+|                | Texas A&M University                                |
+|                | College Station, TX 77843-3258                      |
+|                |                                                     |
 
 ------------------------------------------------------------------------
 
-## Motivation
+## Description:
 
 + This repository contains teaching materials used to teach _Digital Biology_ in the _Spring 2022_.
 
@@ -27,8 +25,8 @@
 ## **Course Schedule and Topics:**
 
 
-| **LECTURE**    | **TOPIC(S)**                                                                                                                                                    |
-|----------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **LECTURE**    | **TOPIC(S)**                                                                                                                                  |
+|----------------|-----------------------------------------------------------------------------------------------------------------------------------------------|
 | **Lecture 01** | **[Introduction 101](https://github.com/raramayo/Digital_Biology/blob/main/T00Introduction01.org)**                                           |
 |                | **[Introduction 102](https://github.com/raramayo/Digital_Biology/blob/main/T00Introduction02.org)**                                           |
 | **Lecture 02** | **[Introduction to SSH](https://github.com/raramayo/Digital_Biology/blob/main/T01_SSH101.org)**                                               |
@@ -47,7 +45,7 @@
 | **Lecture 12** | **[Advanced Emacs](https://github.com/raramayo/Digital_Biology/blob/main/T14_Advanced_Emacs.org)**                                            |
 |                | **[Introduction to Org-Mode](https://github.com/raramayo/Digital_Biology/blob/main/T15_Org_Mode.org)**                                        |
 |                | **[Mapping and Alignment 102 - BWA](https://github.com/raramayo/Digital_Biology/blob/main/T16_Genomics106.pdf)**                              |
-|                | **Scripting BWA Mapping**                                                                                                                                       |
+|                | **Scripting BWA Mapping**                                                                                                                     |
 | **Lecture 13** | **[Mapping and Alignment 103 - BOWTIE/BOWTIE2](https://github.com/raramayo/Digital_Biology/blob/main/T17_Genomics107.pdf)**                   |
 | **Lecture 14** | **[Introduction to Experimental Design](https://github.com/raramayo/Digital_Biology/blob/main/T18_Genomics108.pdf)**                          |
 |                | **[Transcriptome Mapping and Analysis](https://github.com/raramayo/Digital_Biology/blob/main/T19_Genomics109.pdf)**                           |
